@@ -1,1 +1,241 @@
-code
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FIT'OL — Séance</title>
+  <style>
+    :root{--bg:#0f0f10;--card:#121214;--accent:#e53935;--muted:#9aa0a6;--white:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--white);background:linear-gradient(180deg,#0b0b0c 0%, #111113 100%);}
+    .container{max-width:980px;margin:36px auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px}
+    header h1{margin:0;font-size:28px;letter-spacing:1px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+
+    .music-select{display:flex;gap:12px;align-items:center}
+    .music-select label{cursor:pointer;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,.04)}
+    .music-select input{margin-right:8px}
+
+    .ex-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .ex-item{padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);display:flex;flex-direction:column;gap:8px}
+    .ex-item button{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:var(--white);cursor:pointer}
+
+    .player-area{margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:16px}
+    .video-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000}
+    video{width:100%;height:100%;display:block}
+    .countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .countdown .badge{background:rgba(0,0,0,0.6);padding:18px 26px;border-radius:12px;font-size:46px;font-weight:700}
+
+    .side{display:flex;flex-direction:column;gap:12px}
+    .side .btn{padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,.06);cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){.player-area{grid-template-columns:1fr}.ex-list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="" alt="FIT'OL" style="width:48px;height:48px;border-radius:8px;background:var(--accent);display:inline-block"> 
+      <h1>FIT'OL — Séance guidée</h1>
+    </header>
+
+    <section class="controls card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="muted">Choix de la musique (2 options)</div>
+          <div class="music-select" style="margin-top:10px">
+            <label><input type="radio" name="music" value="none" checked> Aucun</label>
+            <label><input type="radio" name="music" value="track1"> Track 1</label>
+            <label><input type="radio" name="music" value="track2"> Track 2</label>
+          </div>
+        </div>
+
+        <div style="text-align:right">
+          <div class="muted">Durée du compte à rebours avant lancement</div>
+          <select id="countdown-duration" style="margin-top:8px;padding:8px;border-radius:8px;background:#0b0b0c;color:var(--white);border:1px solid rgba(255,255,255,.04)">
+            <option value="5">5 s</option>
+            <option value="10">10 s</option>
+            <option value="15">15 s</option>
+            <option value="30" selected>30 s</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ex-list" style="margin-top:18px">
+        <div class="ex-item">
+          <strong>Exercice 1 — Jumping Jacks</strong>
+          <div class="muted">Durée vidéo: 00:30</div>
+          <button data-ex="1">Lancer Exercice 1</button>
+        </div>
+        <div class="ex-item">
+          <strong>Exercice 2 — Pompes</strong>
+          <div class="muted">Durée vidéo: 00:40</div>
+          <button data-ex="2">Lancer Exercice 2</button>
+        </div>
+        <div class="ex-item">
+          <strong>Exercice 3 — Squats</strong>
+          <div class="muted">Durée vidéo: 00:35</div>
+          <button data-ex="3">Lancer Exercice 3</button>
+        </div>
+        <div class="ex-item">
+          <strong>Exercice 4 — Planche</strong>
+          <div class="muted">Durée vidéo: 00:45</div>
+          <button data-ex="4">Lancer Exercice 4</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="player-area">
+      <div class="card video-wrap">
+        <div style="position:relative;height:0;padding-bottom:56.25%">
+          <video id="exerciseVideo" playsinline preload="metadata" controls style="position:absolute;inset:0;width:100%;height:100%">
+            <!-- Les sources sont des placeholders — remplace par ex1.mp4, ex2.mp4 ... -->
+            <source id="videoSource" src="ex1.mp4" type="video/mp4">
+            Ton navigateur ne supporte pas la balise vidéo.
+          </video>
+        </div>
+
+        <div class="countdown" id="countdownOverlay" style="display:none">
+          <div class="badge" id="countdownValue">30</div>
+        </div>
+      </div>
+
+      <aside class="side card">
+        <div>
+          <div class="muted">Statut</div>
+          <div id="status" style="margin-top:8px">Prêt — Choisis un exercice.</div>
+        </div>
+
+        <div>
+          <div class="muted">Contrôles</div>
+          <button class="btn" id="startBtn" style="margin-top:10px">Démarrer le compte à rebours</button>
+          <button class="btn" id="stopBtn" style="margin-top:8px">Arrêter</button>
+        </div>
+
+        <div>
+          <div class="muted">Lecture musique</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="playMusic">Play</button>
+            <button class="btn" id="pauseMusic">Pause</button>
+          </div>
+        </div>
+
+        <div class="muted" style="margin-top:6px">Remplace les fichiers 'track1.mp3', 'track2.mp3' et 'ex#.mp4' par tes fichiers réels dans le même dossier.</div>
+      </aside>
+    </section>
+
+    <footer>FIT'OL — séance de 4 exercices • Développé pour prototype</footer>
+
+    <!-- fichiers audio cachés -->
+    <audio id="track1" loop src="track1.mp3"></audio>
+    <audio id="track2" loop src="track2.mp3"></audio>
+  </div>
+
+  <script>
+    // Logique JS: sélection musique, lancement vidéo avec compte à rebours
+    const video = document.getElementById('exerciseVideo');
+    const videoSource = document.getElementById('videoSource');
+    const countdownOverlay = document.getElementById('countdownOverlay');
+    const countdownValue = document.getElementById('countdownValue');
+    const status = document.getElementById('status');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const playMusicBtn = document.getElementById('playMusic');
+    const pauseMusicBtn = document.getElementById('pauseMusic');
+    const track1 = document.getElementById('track1');
+    const track2 = document.getElementById('track2');
+
+    let selectedExercise = 1;
+    let countdownTimer = null;
+    let countdownRemaining = 30;
+    let selectedMusic = 'none';
+    let currentTrack = null;
+
+    // associer boutons d'exercices
+    document.querySelectorAll('[data-ex]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectedExercise = btn.getAttribute('data-ex');
+        // change la source vidéo (placeholder)
+        videoSource.src = `ex${selectedExercise}.mp4`;
+        video.load();
+        status.textContent = `Exercice ${selectedExercise} sélectionné — prêt.`;
+      });
+    });
+
+    // musique
+    document.querySelectorAll('input[name="music"]').forEach(r=> r.addEventListener('change', e=>{
+      selectedMusic = e.target.value;
+      // arrêter piste précédente
+      if(currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
+      if(selectedMusic === 'track1') currentTrack = track1;
+      else if(selectedMusic === 'track2') currentTrack = track2;
+      else currentTrack = null;
+      status.textContent = selectedMusic==='none' ? 'Musique: Aucun' : `Musique: ${selectedMusic}`;
+    }));
+
+    playMusicBtn.addEventListener('click', ()=>{
+      if(currentTrack) currentTrack.play();
+    });
+    pauseMusicBtn.addEventListener('click', ()=>{
+      if(currentTrack) currentTrack.pause();
+    });
+
+    // start countdown
+    startBtn.addEventListener('click', ()=>{
+      const dur = parseInt(document.getElementById('countdown-duration').value,10) || 30;
+      startCountdown(dur);
+    });
+
+    stopBtn.addEventListener('click', ()=>{
+      stopEverything();
+    });
+
+    function startCountdown(seconds){
+      // play chosen music
+      if(currentTrack) { currentTrack.currentTime = 0; currentTrack.play(); }
+
+      countdownRemaining = seconds;
+      countdownValue.textContent = countdownRemaining;
+      countdownOverlay.style.display = 'flex';
+      video.pause();
+      status.textContent = `Compte à rebours: ${countdownRemaining}s`;
+
+      clearInterval(countdownTimer);
+      countdownTimer = setInterval(()=>{
+        countdownRemaining -= 1;
+        countdownValue.textContent = countdownRemaining;
+        status.textContent = `Compte à rebours: ${countdownRemaining}s`;
+        if(countdownRemaining <= 0){
+          clearInterval(countdownTimer);
+          launchVideo();
+        }
+      },1000);
+    }
+
+    function launchVideo(){
+      countdownOverlay.style.display = 'none';
+      status.textContent = `Lecture exercice ${selectedExercise}`;
+      // play video
+      video.currentTime = 0;
+      video.play().catch(()=>{});
+      // optionally keep music playing, or fade (fade not implemented here)
+    }
+
+    function stopEverything(){
+      clearInterval(countdownTimer);
+      countdownOverlay.style.display = 'none';
+      if(currentTrack){ currentTrack.pause(); currentTrack.currentTime=0; }
+      video.pause();
+      status.textContent = 'Arrêté.';
+    }
+
+    // set defaults
+    videoSource.src = 'ex1.mp4';
+    video.load();
+  </script>
+</body>
+</html>
