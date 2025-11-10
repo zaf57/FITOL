@@ -152,6 +152,7 @@ musicCards.forEach(card => {
 
 
     const exercises = [1,2,3,4];
+    const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"]; // noms anglais
     const exerciseDuration = 70;
     const restDuration = 40;
     let currentExercise = 0;
@@ -178,7 +179,7 @@ musicCards.forEach(card => {
       remaining = exerciseDuration;
       countdownValue.textContent = remaining;
       countdownValue.parentElement.style.display = 'flex';
-      status.textContent = `Exercice ${exercises[currentExercise]} — ${exerciseDuration} s`;
+      status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration} s`;
 
       restImage.style.display = 'none';
       video.style.display = 'block';
