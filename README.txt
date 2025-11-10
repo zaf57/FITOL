@@ -16,7 +16,7 @@
     .player-area{margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:16px}
     .video-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;border:4px solid #5ce1e6;box-shadow:0 0 20px #5ce1e6;padding: 4px;}
     video,img{width:100%;height:100%;display:block;object-fit:cover;border-radius:12px}
-    .countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:right;pointer-events:none}
+    .countdown{position:relative;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
     .countdown .badge{background: transparent ;padding:18px 26px;border-radius:12px;font-size:45px;font-weight:700;color: #5ce1e6}
     .side{display:flex;flex-direction:column;gap:12px}
     .btn{padding:12px;border-radius:10px;background:var(--accent);border:0;color:var(--white);cursor:pointer}
@@ -28,6 +28,23 @@
     .bravo{display:none;text-align:center;font-size:40px;color:var(--accent);animation:fadein 2s forwards;margin-top:20px}
     @keyframes fadein{from{opacity:0} to{opacity:1}}
     .control-row{display:flex;gap:30px;margin-top:8px}
+    
+    .music-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin; /* Firefox */
+}
+.music-row::-webkit-scrollbar {
+  height: 6px;
+}
+.music-row::-webkit-scrollbar-thumb {
+  background: rgba(92,225,230,0.5);
+  border-radius: 3px;
+}
+
+
   </style>
 </head>
 <body>
@@ -55,35 +72,57 @@
 
   <!-- Boutons et musique sous la vidéo -->
   <aside class="side card" style="display:flex;flex-direction:column;gap:12px">
-    <div class="muted">Statut</div>
-    <div id="status" style="margin-top:8px">Prêt — Démarre la séance.</div>
+    <div class="muted" style="display: none">Statut</div>
+    <div id="status" style="margin-top:8px;color: #5ce1e6;font-size: 23px;">Prêt? — Démarre la séance.</div>
 
-    <div style="margin-top:12px">
-      <div class="muted">Choix de la musique</div>
-      <div class="music-select">
-        <label><input type="radio" name="music" value="track1"> Halay</label>
-        <label><input type="radio" name="music" value="track2"> Mix</label>
-       
-        <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn" id="playMusic"style="padding: 17px;">▶</button>
-        <button class="btn" id="pauseMusic"style="padding: 17px;font-size: 17px;">■</button>
-      </div>
-      
-      </div>
-    
-    </div>
-
-    <div class="control-row">
+<div class="control-row">
       <button class="btn" id="startBtn">Démarrer la séance</button>
-      
       <button class="btn" id="pauseBtn" style="background:#999">Pause/Play</button>
     </div>
-    <button class="btn" id="nextBtn" style="background:#5ce1e64f">Suivant</button>
+    
+<div style="margin-top:12px">
+  <div class="muted">Choix de la musique 🎵</div>
+  <div id="musicCards" class="music-row" style="margin-top:8px">
+    <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div>
+    <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
+    <div class="music-card btn" data-track="" data-name="Aucun"> Aucun 🔇</div>
+  </div>
+</div>
+
+    
+    <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou repos</button>
   </aside>
 </section>
 
+<section class="card" style="margin-top:24px; text-align:center;">
+  <h2 style="color:#5ce1e6; margin-bottom:12px;">Présentation des exercices 💪</h2>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; text-align:center;">
+    
+    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+      <h3 style="margin:6px 0; color:#ffffff;">Knee-Tap</h3>
+      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec claquement des mains dessous.</p>
+    </div>
+    
+    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+      <h3 style="margin:6px 0; color:#ffffff;">Side-Knee Reach</h3>
+      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux latérales, mains derrière la tête.</p>
+    </div>
+    
+    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+      <h3 style="margin:6px 0; color:#ffffff;">Knee-Hit Cross</h3>
+      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec les mains croisées touchant le genou.</p>
+    </div>
+    
+    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+      <h3 style="margin:6px 0; color:#ffffff;">Squat</h3>
+      <p style="color:#9aa0a6; font-size:14px;">Squats classiques pour renforcer les jambes et les fessiers.</p>
+    </div>
+    
+  </div>
+</section>
 
-    <footer>FIT'OL — séance de 4 exercices • Développé pour prototype</footer>
+    
+    <footer>FIT'OL — séance de 4 exercices • Développé par KZ</footer>
 
     <!-- Musiques -->
     <audio id="track1" loop src="Halay15.mp3"></audio>
@@ -106,20 +145,41 @@
     const track2 = document.getElementById('track2');
     let currentTrack = null;
 
-    const musicRadios = document.querySelectorAll('input[name="music"]');
-    musicRadios.forEach(radio=>{
-      radio.addEventListener('change', e=>{
-        if(currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
-        if(e.target.value==='track1') currentTrack = track1;
-        else if(e.target.value==='track2') currentTrack = track2;
-        else currentTrack = null;
-      });
-    });
+    const musicCards = document.querySelectorAll('.music-card');
+musicCards.forEach(card => {
+  card.addEventListener('click', () => {
+    // Pause la musique en cours
+    if(currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
+    
+    // Supprime la classe active des autres cards
+    musicCards.forEach(c => c.classList.remove('active'));
 
-    document.getElementById('playMusic').addEventListener('click', ()=>{ if(currentTrack) currentTrack.play(); });
-    document.getElementById('pauseMusic').addEventListener('click', ()=>{ if(currentTrack) currentTrack.pause(); });
+    const trackName = card.getAttribute('data-track');
+    if(trackName === 'track1') currentTrack = track1;
+    else if(trackName === 'track2') currentTrack = track2;
+    else currentTrack = null;
+
+    // Active la card sélectionnée
+    card.classList.add('active');
+
+    // Démarre la musique si disponible
+    if(currentTrack) currentTrack.play();
+    
+    // Change le texte ▶ / ■ en conséquence
+    musicCards.forEach(c => {
+      if(c !== card && c.getAttribute('data-track')) {
+        c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
+      }
+    });
+    if(currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
+    else card.textContent = '🔇 Aucun';
+  });
+});
+
+
 
     const exercises = [1,2,3,4];
+    const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"]; // noms anglais
     const exerciseDuration = 70;
     const restDuration = 40;
     let currentExercise = 0;
@@ -146,7 +206,7 @@
       remaining = exerciseDuration;
       countdownValue.textContent = remaining;
       countdownValue.parentElement.style.display = 'flex';
-      status.textContent = `Exercice ${exercises[currentExercise]} — ${exerciseDuration} s`;
+      status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration} s`;
 
       restImage.style.display = 'none';
       video.style.display = 'block';
