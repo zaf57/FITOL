@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="logo-fitol.ico">
+  <link rel="stylesheet" href="style.css">
+  <title>FIT'OL</title>
+  <style>
+    :root {
+      --bg: #0f0f10;
+      --card: #121214;
+      --accent: #5ce1e6;
+      --muted: #9aa0a6;
+      --white: #ffffff;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui;
+      color: var(--white);
+      background: linear-gradient(180deg, #0b0b0c 0%, #111113 100%);
+      fond-size: 16px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 36px auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .6);
+    }
+
+    .player-area {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .video-wrap {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #000;
+      border: 4px solid #5ce1e6;
+      box-shadow: 0 0 20px #5ce1e6;
+      padding: 4px;
+    }
+
+    video, img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+
+    .countdown {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: end;
+    justify-content: right;
+    pointer-events: none;
+    flex-direction: column-reverse;
+}
+
+    .countdown .badge {
+      background: transparent;
+      padding: 18px 26px;
+      border-radius: 12px;
+      font-size: 50px;
+      font-weight: 700;
+      color: orange;
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--accent);
+      border: 0;
+      color: var(--white);
+      cursor: pointer;
+      fond-size: 16px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .music-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .music-row::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .music-row::-webkit-scrollbar-thumb {
+      background: rgba(92, 225, 230, 0.5);
+      border-radius: 3px;
+    }
+
+    .bravo {
+      display: none;
+      text-align: center;
+      font-size: 40px;
+      color: var(--accent);
+      animation: fadein 2s forwards;
+      margin-top: 20px;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0 }
+      to { opacity: 1 }
+    }
+
+#seriesOverlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;      /* <-- ici, à gauche au lieu de right */
+  background: rgba(0,0,0,0.5);
+  color: #5ce1e6;
+  font-weight: 700;
+  font-size: 24px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 1;
+  transform: scale(1);
+  transition: none;
+}
+
+
+    #finishOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    .finish-content {
+      text-align: center;
+      color: #5ce1e6;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    #confettiCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .progress-container {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 100%; /* pleine au départ, on va la réduire */
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container" style="margin-top: 2px;">
+    <header>
+      <img src="logo-fitolblanctransp.png" alt="FIT'OL" style="width:48px;height:48px;border-radius:8px;background:#4b4b4b">
+      <h1>Hazır mısın?</h1>
+    </header>
+
+    <section class="player-area">
+      <div class="card video-wrap">
+        <div style="position:relative;height:0;padding-bottom:125%">
+          <video id="exerciseVideo" playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%">
+            <source id="videoSource" src="ex1.mp4" type="video/mp4">
+            Ton navigateur ne supporte pas la balise vidéo.
+          </video>
+          <img id="restImage" alt="repos" src="repos.jpg" style="position:absolute;inset:0;display:none">
+          <div id="seriesOverlay">S. 1</div>
+        </div>
+
+      
+        <div class="countdown" id="countdownOverlay">
+  <div class="badge" id="countdownValue">70</div>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar" style="background-color: orange;"></div>
+  </div>
+</div>
+
+
+        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
+
+        <div id="finishOverlay">
+          <div class="finish-content">
+            <h1>🎉TERMINÉ🎉</h1>
+            <p>Excellent travail tu as fini toutes les séries!💪</p>
+          </div>
+          <canvas id="confettiCanvas"></canvas>
+        </div>
+      </div>
+
+      <aside class="side card">
+        <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;">
+          <div id="status">Prêt? — Démarre la séance.</div>
+          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
+        </div>
+
+        <div class="control-row">
+          <button class="btn" id="startBtn">Démarrer la séance</button>
+          <button class="btn" id="pauseBtn" style="background:#999">⏸/ ▶</button>
+          <button class="btn" id="arreterBtn" style="background:#c0392b">⛔ Arrêter</button>
+
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="muted">Choix de la musique 🎵</div>
+          <div id="musicCards" class="music-row" style="margin-top:8px">
+            <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div>
+            <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
+            <div class="music-card btn" data-track="" data-name="Aucun"> STOP 🔈</div>
+          </div>
+        </div>
+
+        <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou le repos</button>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:24px; text-align:center;">
+      <h2 style="color:#5ce1e6; margin-bottom:12px;">Présentation des exercices </h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; text-align:center;">
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Knee-Tap</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec claquement des mains dessous.</p>
+        </div>
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Side-Knee Reach</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux latérales, mains derrière la tête.</p>
+        </div>
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Knee-Hit Cross</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec les mains croisées touchant le genou.</p>
+        </div>
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Squat</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Squats classiques pour renforcer les jambes et les fessiers.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>FIT'OL — séance de 4 exercices • Développé par KZ</footer>
+
+    <audio id="track1" loop src="Halay.mp3"></audio>
+    <audio id="track2" loop src="Mix15.mp3"></audio>
+    <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
+  </div>
+
+  <script>
+    const video = document.getElementById('exerciseVideo');
+    const videoSource = document.getElementById('videoSource');
+    const restImage = document.getElementById('restImage');
+    const countdownValue = document.getElementById('countdownValue');
+    const status = document.getElementById('status');
+    const currentSetDisplay = document.getElementById('currentSet');
+    const seriesOverlay = document.getElementById('seriesOverlay');
+    const bravoMessage = document.getElementById('bravoMessage');
+    const finishOverlay = document.getElementById('finishOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const track1 = document.getElementById('track1');
+    const track2 = document.getElementById('track2');
+    const beepSound = document.getElementById('beepSound');
+    const progressBar = document.getElementById('progressBar');
+
+    let currentTrack = null;
+    let currentExercise = 0;
+    let currentSet = 1;
+    let timer = null;
+    let remaining = 0;
+    let inRest = false;
+    let isPaused = false;
+
+    const musicCards = document.querySelectorAll('.music-card');
+    musicCards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (currentTrack) { currentTrack.pause(); currentTrack.currentTime = 0; }
+        musicCards.forEach(c => c.classList.remove('active'));
+        const trackName = card.getAttribute('data-track');
+        if (trackName === 'track1') currentTrack = track1;
+        else if (trackName === 'track2') currentTrack = track2;
+        else currentTrack = null;
+        card.classList.add('active');
+        if (currentTrack) currentTrack.play();
+      });
+    });
+
+    const exercises = [1,2,3,4];
+    const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"];
+    const exerciseDuration = 70;
+    const restDuration = 40;
+    const totalSets = 4;
+
+    function updateSeriesDisplay(){
+      seriesOverlay.textContent = `S. ${currentSet}`;
+      currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
+    }
+
+    function showFinishOverlay(){
+      finishOverlay.style.display = 'flex';
+      launchConfetti();
+      setTimeout(()=>{ finishOverlay.style.display='none'; },7000);
+    }
+
+    function startExercise(index){
+      currentExercise = index;
+      inRest = false;
+      isPaused = false;
+
+      if(currentExercise>=exercises.length){
+        currentSet++;
+        if(currentSet>totalSets){
+          countdownValue.parentElement.style.display='none';
+          status.textContent='Séance terminée ! 🎉';
+          bravoMessage.style.display='block';
+          restImage.style.display='none';
+          video.style.display='block';
+          showFinishOverlay();
+          return;
+        } else {
+          currentExercise=0;
+          let pauseBetweenSets=10;
+          status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
+          restImage.style.display='block';
+          video.style.display='none';
+          countdownValue.parentElement.style.display='flex';
+          remaining=pauseBetweenSets;
+          countdownValue.textContent=remaining;
+          clearInterval(timer);
+          timer=setInterval(()=>{
+            remaining--;
+            countdownValue.textContent=remaining;
+            if(remaining===4){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
+            if(remaining<=0){ clearInterval(timer); restImage.style.display='none'; video.style.display='block'; updateSeriesDisplay(); startExercise(currentExercise); }
+          },1000);
+          return;
+        }
+      }
+
+      videoSource.src=`ex${exercises[currentExercise]}.mp4`;
+      video.load();
+      remaining=exerciseDuration;
+      countdownValue.textContent=remaining;
+      countdownValue.parentElement.style.display='flex';
+      status.textContent=`${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
+      restImage.style.display='none';
+      video.style.display='block';
+      video.currentTime=0;
+      video.play().catch(()=>{});
+      if(currentTrack) currentTrack.play();
+      updateSeriesDisplay();
+      clearInterval(timer);
+      timer=setInterval(updateCountdown,1000);
+    }
+
+    function startRest(){
+      inRest=true;
+      isPaused=false;
+      remaining=restDuration;
+      countdownValue.textContent=remaining;
+      status.textContent=`Repos — ${restDuration} s`;
+      video.pause();
+      video.style.display='none';
+      restImage.style.display='block';
+      clearInterval(timer);
+      timer=setInterval(updateCountdown,1000);
+    }
+
+    function updateCountdown(){
+      if(isPaused) return;
+      remaining--;
+      countdownValue.textContent=remaining;
+      
+        // Calcul du pourcentage restant
+  const totalTime = inRest ? restDuration : exerciseDuration;
+  const percent = (remaining / totalTime) * 100;
+  progressBar.style.width = percent + '%';
+      
+      if(remaining===5){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
+      if(remaining<=0){ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); }
+    }
+
+    
+    
+    startBtn.addEventListener('click',()=>{ bravoMessage.style.display='none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
+    nextBtn.addEventListener('click',()=>{ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); });
+    pauseBtn.addEventListener('click',()=>{ isPaused=!isPaused; if(isPaused){ status.textContent+=' (Pause)'; video.pause(); if(currentTrack)currentTrack.pause(); } else { status.textContent=status.textContent.replace(' (Pause)',''); 
+    if(!inRest)video.play().catch(()=>{}); 
+    if(currentTrack)currentTrack.play(); } });
+
+    
+    
+    function launchConfetti(){
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width=window.innerWidth;
+      canvas.height=window.innerHeight;
+      const confettiCount=150;
+      const confettis=[];
+      for(let i=0;i<confettiCount;i++){
+        confettis.push({
+          x: Math.random()*canvas.width,
+          y: Math.random()*canvas.height-canvas.height,
+          r: Math.random()*6+4,
+          d: Math.random()*confettiCount,
+          color:`hsl(${Math.random()*360},100%,50%)`,
+          tilt:Math.random()*10-10,
+          tiltAngleIncremental:Math.random()*0.07+0.05
+        });
+      }
+      let angle=0;
+      function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        confettis.forEach(c=>{
+          ctx.beginPath();
+          ctx.lineWidth=c.r/2;
+          ctx.strokeStyle=c.color;
+          ctx.moveTo(c.x+c.tilt+c.r/4,c.y);
+          ctx.lineTo(c.x+c.tilt,c.y+c.tilt+c.r/4);
+          ctx.stroke();
+        });
+        update();
+      }
+      function update(){
+        angle+=0.01;
+        confettis.forEach(c=>{
+          c.tiltAngleIncremental+=0.01;
+          c.y+=(Math.cos(angle+c.d)+3+c.r/2)/2;
+          c.x+=Math.sin(angle);
+          c.tilt=Math.sin(c.tiltAngleIncremental)*15;
+          if(c.y>canvas.height){ c.y=-10; c.x=Math.random()*canvas.width; }
+        });
+      }
+      function animate(){ draw(); requestAnimationFrame(animate); }
+      animate();
+      setTimeout(()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); },7000);
+    }
+  </script>
+</body>
+</html>
