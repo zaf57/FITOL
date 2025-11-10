@@ -259,7 +259,7 @@
       </div>
 
       <aside class="side card">
-        <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;">
+        <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;"> 
           <div id="status">Prêt? — Démarre la séance.</div>
           <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
         </div>
@@ -274,7 +274,7 @@
         <div style="margin-top:12px">
           <div class="muted">Choix de la musique 🎵</div>
           <div id="musicCards" class="music-row" style="margin-top:8px">
-            <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div>
+            <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div> 
             <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
             <div class="music-card btn" data-track="" data-name="Aucun"> STOP 🔈</div>
           </div>
@@ -313,7 +313,7 @@
     <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
   </div>
 
-   <script>
+ <script>
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('exerciseVideo');
   const videoSource = document.getElementById('videoSource');
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         currentExercise=0;
         let pauseBetweenSets=10;
-        status.textContent=`Nouvelle SÉRIE dans ${pauseBetweenSets}s`;
+        status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
         restImage.style.display='block';
         video.style.display='none';
         countdownValue.parentElement.style.display='flex';
@@ -523,5 +523,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+
 </body>
 </html>
