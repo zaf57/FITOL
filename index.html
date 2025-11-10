@@ -196,6 +196,25 @@
       height: 100%;
       pointer-events: none;
     }
+    
+    .progress-container {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 100%; /* pleine au départ, on va la réduire */
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
   </style>
 </head>
 
@@ -218,9 +237,14 @@
           <div id="seriesOverlay">S. 1</div>
         </div>
 
+      
         <div class="countdown" id="countdownOverlay">
-          <div class="badge" id="countdownValue">70</div>
-        </div>
+  <div class="badge" id="countdownValue">70</div>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</div>
+
 
         <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
 
@@ -302,6 +326,7 @@
     const track1 = document.getElementById('track1');
     const track2 = document.getElementById('track2');
     const beepSound = document.getElementById('beepSound');
+    const progressBar = document.getElementById('progressBar');
 
     let currentTrack = null;
     let currentExercise = 0;
@@ -332,8 +357,8 @@
     const totalSets = 4;
 
     function updateSeriesDisplay(){
-      seriesOverlay.textContent = `S. ${currentSet}`;
-      currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
+      seriesOverlay.textContent = `S ${currentSet}`;
+      currentSetDisplay.textContent = `S ${currentSet}/${totalSets}`;
     }
 
     function showFinishOverlay(){
@@ -359,8 +384,8 @@
           return;
         } else {
           currentExercise=0;
-          let pauseBetweenSets=20;
-          status.textContent=`la Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
+          let pauseBetweenSets=10;
+          status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
           restImage.style.display='block';
           video.style.display='none';
           countdownValue.parentElement.style.display='flex';
@@ -410,14 +435,26 @@
       if(isPaused) return;
       remaining--;
       countdownValue.textContent=remaining;
+      
+        // Calcul du pourcentage restant
+  const totalTime = inRest ? restDuration : exerciseDuration;
+  const percent = (remaining / totalTime) * 100;
+  progressBar.style.width = percent + '%';
+      
       if(remaining===5){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
       if(remaining<=0){ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); }
     }
 
+    
+    
     startBtn.addEventListener('click',()=>{ bravoMessage.style.display='none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
     nextBtn.addEventListener('click',()=>{ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); });
-    pauseBtn.addEventListener('click',()=>{ isPaused=!isPaused; if(isPaused){ status.textContent+=' (Pause)'; video.pause(); if(currentTrack)currentTrack.pause(); } else { status.textContent=status.textContent.replace(' (Pause)',''); if(!inRest)video.play().catch(()=>{}); if(currentTrack)currentTrack.play(); } });
+    pauseBtn.addEventListener('click',()=>{ isPaused=!isPaused; if(isPaused){ status.textContent+=' (Pause)'; video.pause(); if(currentTrack)currentTrack.pause(); } else { status.textContent=status.textContent.replace(' (Pause)',''); 
+    if(!inRest)video.play().catch(()=>{}); 
+    if(currentTrack)currentTrack.play(); } });
 
+    
+    
     function launchConfetti(){
       const canvas = document.getElementById('confettiCanvas');
       const ctx = canvas.getContext('2d');
