@@ -215,7 +215,7 @@
             Ton navigateur ne supporte pas la balise vidéo.
           </video>
           <img id="restImage" alt="repos" src="repos.jpg" style="position:absolute;inset:0;display:none">
-          <div id="seriesOverlay">Série 1</div>
+          <div id="seriesOverlay">S. 1</div>
         </div>
 
         <div class="countdown" id="countdownOverlay">
@@ -236,7 +236,7 @@
       <aside class="side card">
         <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;">
           <div id="status">Prêt? — Démarre la séance.</div>
-          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
+          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">S. 1/4</div>
         </div>
 
         <div class="control-row">
@@ -332,8 +332,8 @@
     const totalSets = 4;
 
     function updateSeriesDisplay(){
-      seriesOverlay.textContent = `Série ${currentSet}`;
-      currentSetDisplay.textContent = `Série ${currentSet}/${totalSets}`;
+      seriesOverlay.textContent = `S. ${currentSet}`;
+      currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
     }
 
     function showFinishOverlay(){
