@@ -141,7 +141,7 @@ musicCards.forEach(card => {
     // Change le texte ▶ / ■ en conséquence
     musicCards.forEach(c => {
       if(c !== card && c.getAttribute('data-track')) {
-        c.textContent = '🎵 ' + c.textContent.split(' ')[1] + ' ▶';
+        c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
       }
     });
     if(currentTrack) card.textContent = '🎵 ' + card.textContent.split(' ')[1] + ' ■';
