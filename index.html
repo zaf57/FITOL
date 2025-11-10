@@ -337,8 +337,8 @@
           return;
         } else {
           currentExercise = 0;
-          status.textContent = `Starting set ${currentSet}/${totalSets}...`;
-          setTimeout(() => startExercise(currentExercise), 3000); // petite pause de 3s entre les séries
+          status.textContent = ` ${currentSet}/${totalSets}...Prochaine SERIE dans 10s`;
+          setTimeout(() => startExercise(currentExercise), 10000); // petite pause de 10s entre les séries
           return;
         }
       }
