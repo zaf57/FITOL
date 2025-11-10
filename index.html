@@ -28,22 +28,22 @@
     .bravo{display:none;text-align:center;font-size:40px;color:var(--accent);animation:fadein 2s forwards;margin-top:20px}
     @keyframes fadein{from{opacity:0} to{opacity:1}}
     .control-row{display:flex;gap:30px;margin-top:8px}
-    .music-card {
-  cursor: pointer;
-  padding: 12px 16px;
-  border-radius: 10px;
-  text-align: center;
-  transition: all 0.2s;
-  border: 1px solid rgba(255,255,255,.2); 
+    
+    .music-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin; /* Firefox */
 }
-.music-card.active {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
+.music-row::-webkit-scrollbar {
+  height: 6px;
 }
-.music-card:hover {
-  transform: scale(1.05);
+.music-row::-webkit-scrollbar-thumb {
+  background: rgba(92,225,230,0.5);
+  border-radius: 3px;
 }
+
 
   </style>
 </head>
@@ -75,14 +75,15 @@
     <div class="muted">Statut</div>
     <div id="status" style="margin-top:8px">Prêt — Démarre la séance.</div>
 
- <div style="margin-top:12px">
+<div style="margin-top:12px">
   <div class="muted">Choix de la musique</div>
-  <div id="musicCards" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
-    <div class="music-card btn" data-track="track1">🎵 Halay ▶</div>
-    <div class="music-card btn" data-track="track2">🎵 Mix ▶</div>
-    <div class="music-card btn" data-track="">🔇 Aucun</div>
+  <div id="musicCards" class="music-row" style="margin-top:8px">
+    <div class="music-card btn" data-track="track1" data-name="Halay">🎵 Halay ▶</div>
+    <div class="music-card btn" data-track="track2" data-name="Mix">🎵 Mix ▶</div>
+    <div class="music-card btn" data-track="" data-name="Aucun">🔇 Aucun</div>
   </div>
 </div>
+
 
 
     <div class="control-row">
