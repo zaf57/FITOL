@@ -182,13 +182,57 @@
       background: rgba(92, 225, 230, 0.5);
       border-radius: 3px;
     }
+    #finishOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadein-bg 1s ease forwards;
+}
+
+.finish-content {
+  text-align: center;
+  color: #5ce1e6;
+  font-size: 32px;
+  animation: popin 1.2s ease forwards;
+}
+
+.finish-content h1 {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+@keyframes fadein-bg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popin {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+#confettiCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
   </style>
 </head>
 
 <body>
+
   <div class="container">
     <header>
-      <img src="logo-fitolblanctransp.png" alt="FIT'OL" style="width:100px;height:60px;border-radius:8px;background:#4b4b4b">
+      <img src="logo-fitolblanctransp.png" alt="FIT'OL" style="width:48px;height:48px;border-radius:8px;background:#4b4b4b">
       <h1>Hazır mı?</h1>
     </header>
 
@@ -200,12 +244,23 @@
             <source id="videoSource" src="ex1.mp4" type="video/mp4">
             Ton navigateur ne supporte pas la balise vidéo.
           </video>
-          <img id="restImage" src="repos.png" style="position:absolute;inset:0;display:none">
+          <img id="restImage" alt="repos" src="repos.png" style="position:absolute;inset:0;display:none">
         </div>
         <div class="countdown" id="countdownOverlay">
           <div class="badge" id="countdownValue">70</div>
         </div>
-        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée 🎉</div>
+        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
+        <!-- Animation plein écran -->
+        <div id="finishOverlay">
+          <div class="finish-content">
+            <h1>🎉TERMINÉ🎉</h1>
+            <p>Excellent travail tu a
+              fini toutes les séries!💪</p>
+          </div>
+          <!-- Conteneur pour confettis -->
+          <canvas id="confettiCanvas"></canvas>
+        </div>
+
       </div>
 
       <!-- Boutons et musique sous la vidéo -->
@@ -229,6 +284,7 @@
 
         <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou repos</button>
       </aside>
+
     </section>
 
     <section class="card" style="margin-top:24px; text-align:center;">
@@ -273,7 +329,7 @@
     const restImage = document.getElementById('restImage');
     const countdownValue = document.getElementById('countdownValue');
     const status = document.getElementById('status');
-    const bravoMessage = document.getElementById('bravoMessage');
+    const Message = document.getElementById('bravoMessage');
     const startBtn = document.getElementById('startBtn');
     const nextBtn = document.getElementById('nextBtn');
     const pauseBtn = document.getElementById('pauseBtn');
@@ -331,23 +387,52 @@
         if (currentSet > totalSets) {
           countdownValue.parentElement.style.display = 'none';
           status.textContent = 'Workout complete!';
-          bravoMessage.style.display = 'block';
+          Message.style.display = 'block';
           restImage.style.display = 'none';
           video.style.display = 'block';
+          // 🎉 Animation plein écran
+          const finishOverlay = document.getElementById('finishOverlay');
+          finishOverlay.style.display = 'flex';
+          launchConfetti(); // <-- ici, pas avant !
+          setTimeout(() => {
+            finishOverlay.style.display = 'none';
+          }, 7000);
           return;
         } else {
           currentExercise = 0;
-          status.textContent = ` ${currentSet}/${totalSets}...Prochaine SERIE dans 10s`;
-          setTimeout(() => startExercise(currentExercise), 10000); // petite pause de 10s entre les séries
+          let pauseBetweenSets = 10;
+          status.textContent = `Prochaine SÉRIE ${currentSet}/${totalSets} dans ${pauseBetweenSets}s`;
+          restImage.style.display = 'block';
+          video.style.display = 'none';
+          countdownValue.parentElement.style.display = 'flex';
+          remaining = pauseBetweenSets;
+          countdownValue.textContent = remaining;
+          clearInterval(timer);
+          timer = setInterval(() => {
+            remaining--;
+            countdownValue.textContent = remaining;
+            // 🔊 bip à 4 secondes avant reprise
+            if (remaining === 4) {
+              beepSound.currentTime = 0;
+              beepSound.play().catch(() => {});
+            }
+            if (remaining <= 0) {
+              clearInterval(timer);
+              restImage.style.display = 'none';
+              video.style.display = 'block';
+              startExercise(currentExercise);
+            }
+          }, 1000);
           return;
         }
       }
+      // --- Code principal pour lancer l'exercice ---
       videoSource.src = `ex${exercises[currentExercise]}.mp4`;
       video.load();
       remaining = exerciseDuration;
       countdownValue.textContent = remaining;
       countdownValue.parentElement.style.display = 'flex';
-      status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration} s`;
+      status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
       restImage.style.display = 'none';
       video.style.display = 'block';
       video.currentTime = 0;
@@ -406,6 +491,66 @@
         if (currentTrack) currentTrack.play();
       }
     });
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const confettiCount = 150;
+      const confettis = [];
+      // Création des confettis
+      for (let i = 0; i < confettiCount; i++) {
+        confettis.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * confettiCount,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+          tilt: Math.random() * 10 - 10,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.05
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confettis.forEach(c => {
+          ctx.beginPath();
+          ctx.lineWidth = c.r / 2;
+          ctx.strokeStyle = c.color;
+          ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+          ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+          ctx.stroke();
+        });
+        update();
+      }
+      let angle = 0;
+
+      function update() {
+        angle += 0.01;
+        confettis.forEach(c => {
+          c.tiltAngleIncremental += 0.01;
+          c.y += (Math.cos(angle + c.d) + 3 + c.r / 2) / 2;
+          c.x += Math.sin(angle);
+          c.tilt = Math.sin(c.tiltAngleIncremental) * 15;
+          if (c.y > canvas.height) {
+            c.y = -10;
+            c.x = Math.random() * canvas.width;
+          }
+        });
+      }
+
+      function animate() {
+        draw();
+        requestAnimationFrame(animate);
+      }
+      animate();
+      // Stop after 7 secondes
+      setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }, 7000);
+    }
+
   </script>
 </body>
 
