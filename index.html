@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,46 +8,183 @@
   <link rel="stylesheet" href="style.css">
   <title>FIT'OL</title>
   <style>
-    :root{--bg:#0f0f10;--card:#121214;--accent:#5ce1e6;--muted:#9aa0a6;--white:#ffffff}
-    html,body{height:100%;margin:0;font-family:Inter, system-ui;color:var(--white);background:linear-gradient(180deg,#0b0b0c 0%, #111113 100%);}
-    .container{max-width:980px;margin:36px auto;padding:24px}
-    header{display:flex;align-items:center;gap:16px;justify-content: center;}
-    header h1{margin:0;font-size:28px;letter-spacing:1px}
-    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
-    .player-area{margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:16px}
-    .video-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;border:4px solid #5ce1e6;box-shadow:0 0 20px #5ce1e6;padding: 4px;}
-    video,img{width:100%;height:100%;display:block;object-fit:cover;border-radius:12px}
-    .countdown{position:relative;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-    .countdown .badge{background: transparent ;padding:18px 26px;border-radius:12px;font-size:45px;font-weight:700;color: #5ce1e6}
-    .side{display:flex;flex-direction:column;gap:12px}
-    .btn{padding:12px;border-radius:10px;background:var(--accent);border:0;color:var(--white);cursor:pointer}
-    .muted{color:var(--muted);font-size:14px}
-    footer{margin-top:22px;color:var(--muted);font-size:13px}
-    .music-select{display:flex;gap:12px;align-items:center;margin-top:8px}
-    .music-select label{cursor:pointer;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,.04)}
-    .music-select input{margin-right:8px}
-    .bravo{display:none;text-align:center;font-size:40px;color:var(--accent);animation:fadein 2s forwards;margin-top:20px}
-    @keyframes fadein{from{opacity:0} to{opacity:1}}
-    .control-row{display:flex;gap:30px;margin-top:8px}
-    
+    :root {
+      --bg: #0f0f10;
+      --card: #121214;
+      --accent: #5ce1e6;
+      --muted: #9aa0a6;
+      --white: #ffffff
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui;
+      color: var(--white);
+      background: linear-gradient(180deg, #0b0b0c 0%, #111113 100%);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 36px auto;
+      padding: 24px
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px
+    }
+
+    .card {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .6)
+    }
+
+    .player-area {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 16px
+    }
+
+    .video-wrap {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      border: 4px solid #5ce1e6;
+      box-shadow: 0 0 20px #5ce1e6;
+      padding: 4px;
+    }
+
+    video,
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 12px
+    }
+
+    .countdown {
+      position: relative;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none
+    }
+
+    .countdown .badge {
+      background: transparent;
+      padding: 18px 26px;
+      border-radius: 12px;
+      font-size: 45px;
+      font-weight: 700;
+      color: #5ce1e6
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--accent);
+      border: 0;
+      color: var(--white);
+      cursor: pointer
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .music-select {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px
+    }
+
+    .music-select label {
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, .04)
+    }
+
+    .music-select input {
+      margin-right: 8px
+    }
+
+    .bravo {
+      display: none;
+      text-align: center;
+      font-size: 40px;
+      color: var(--accent);
+      animation: fadein 2s forwards;
+      margin-top: 20px
+    }
+
+    @keyframes fadein {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .control-row {
+      display: flex;
+      gap: 30px;
+      margin-top: 8px
+    }
+
     .music-row {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin; /* Firefox */
-}
-.music-row::-webkit-scrollbar {
-  height: 6px;
-}
-.music-row::-webkit-scrollbar-thumb {
-  background: rgba(92,225,230,0.5);
-  border-radius: 3px;
-}
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      /* Firefox */
+    }
 
+    .music-row::-webkit-scrollbar {
+      height: 6px;
+    }
 
+    .music-row::-webkit-scrollbar-thumb {
+      background: rgba(92, 225, 230, 0.5);
+      border-radius: 3px;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <header>
@@ -54,79 +192,79 @@
       <h1>Hazır mı?</h1>
     </header>
 
-<section class="player-area" style="display:flex;flex-direction:column;gap:16px">
-  <!-- Vidéo + repos + compteur -->
-  <div class="card video-wrap">
-    <div style="position:relative;height:0;padding-bottom:56.25%">
-      <video id="exerciseVideo" playsinline preload="metadata" controls style="position:absolute;inset:0;width:100%;height:100%">
-        <source id="videoSource" src="ex1.mp4" type="video/mp4">
-        Ton navigateur ne supporte pas la balise vidéo.
-      </video>
-      <img id="restImage" src="repos.png" style="position:absolute;inset:0;display:none">
-    </div>
-    <div class="countdown" id="countdownOverlay">
-      <div class="badge" id="countdownValue">70</div>
-    </div>
-    <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée 🎉</div>
-  </div>
+    <section class="player-area" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Vidéo + repos + compteur -->
+      <div class="card video-wrap">
+        <div style="position:relative;height:0;padding-bottom:56.25%">
+          <video id="exerciseVideo" playsinline preload="metadata" controls style="position:absolute;inset:0;width:100%;height:100%">
+            <source id="videoSource" src="ex1.mp4" type="video/mp4">
+            Ton navigateur ne supporte pas la balise vidéo.
+          </video>
+          <img id="restImage" src="repos.png" style="position:absolute;inset:0;display:none">
+        </div>
+        <div class="countdown" id="countdownOverlay">
+          <div class="badge" id="countdownValue">70</div>
+        </div>
+        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée 🎉</div>
+      </div>
 
-  <!-- Boutons et musique sous la vidéo -->
-  <aside class="side card" style="display:flex;flex-direction:column;gap:12px">
-    <div class="muted" style="display: none">Statut</div>
-    <div id="status" style="margin-top:8px;color: #5ce1e6;font-size: 23px;">Prêt? — Démarre la séance.</div>
+      <!-- Boutons et musique sous la vidéo -->
+      <aside class="side card" style="display:flex;flex-direction:column;gap:12px">
+        <div class="muted" style="display: none">Statut</div>
+        <div id="status" style="margin-top:8px;color: #5ce1e6;font-size: 23px;">Prêt? — Démarre la séance.</div>
 
-<div class="control-row">
-      <button class="btn" id="startBtn">Démarrer la séance</button>
-      <button class="btn" id="pauseBtn" style="background:#999">Pause/Play</button>
-    </div>
-    
-<div style="margin-top:12px">
-  <div class="muted">Choix de la musique 🎵</div>
-  <div id="musicCards" class="music-row" style="margin-top:8px">
-    <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div>
-    <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
-    <div class="music-card btn" data-track="" data-name="Aucun"> Aucun 🔇</div>
-  </div>
-</div>
+        <div class="control-row">
+          <button class="btn" id="startBtn">Démarrer la séance</button>
+          <button class="btn" id="pauseBtn" style="background:#999">Pause/Play</button>
+        </div>
 
-    
-    <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou repos</button>
-  </aside>
-</section>
+        <div style="margin-top:12px">
+          <div class="muted">Choix de la musique 🎵</div>
+          <div id="musicCards" class="music-row" style="margin-top:8px">
+            <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div>
+            <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
+            <div class="music-card btn" data-track="" data-name="Aucun"> Aucun 🔇</div>
+          </div>
+        </div>
 
-<section class="card" style="margin-top:24px; text-align:center;">
-  <h2 style="color:#5ce1e6; margin-bottom:12px;">Présentation des exercices 💪</h2>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; text-align:center;">
-    
-    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
-      <h3 style="margin:6px 0; color:#ffffff;">Knee-Tap</h3>
-      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec claquement des mains dessous.</p>
-    </div>
-    
-    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
-      <h3 style="margin:6px 0; color:#ffffff;">Side-Knee Reach</h3>
-      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux latérales, mains derrière la tête.</p>
-    </div>
-    
-    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
-      <h3 style="margin:6px 0; color:#ffffff;">Knee-Hit Cross</h3>
-      <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec les mains croisées touchant le genou.</p>
-    </div>
-    
-    <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
-      <h3 style="margin:6px 0; color:#ffffff;">Squat</h3>
-      <p style="color:#9aa0a6; font-size:14px;">Squats classiques pour renforcer les jambes et les fessiers.</p>
-    </div>
-    
-  </div>
-</section>
+        <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou repos</button>
+      </aside>
+    </section>
 
-    
+    <section class="card" style="margin-top:24px; text-align:center;">
+      <h2 style="color:#5ce1e6; margin-bottom:12px;">Présentation des exercices 💪</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; text-align:center;">
+
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Knee-Tap</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec claquement des mains dessous.</p>
+        </div>
+
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Side-Knee Reach</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux latérales, mains derrière la tête.</p>
+        </div>
+
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Knee-Hit Cross</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec les mains croisées touchant le genou.</p>
+        </div>
+
+        <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
+          <h3 style="margin:6px 0; color:#ffffff;">Squat</h3>
+          <p style="color:#9aa0a6; font-size:14px;">Squats classiques pour renforcer les jambes et les fessiers.</p>
+        </div>
+
+      </div>
+    </section>
+
     <footer>FIT'OL — séance de 4 exercices • Développé par KZ</footer>
 
     <!-- Musiques -->
     <audio id="track1" loop src="Halay15.mp3"></audio>
     <audio id="track2" loop src="Mix15.mp3"></audio>
+    <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
+
   </div>
 
   <script>
@@ -136,134 +274,139 @@
     const countdownValue = document.getElementById('countdownValue');
     const status = document.getElementById('status');
     const bravoMessage = document.getElementById('bravoMessage');
-
     const startBtn = document.getElementById('startBtn');
     const nextBtn = document.getElementById('nextBtn');
     const pauseBtn = document.getElementById('pauseBtn');
-
     const track1 = document.getElementById('track1');
     const track2 = document.getElementById('track2');
+    const beepSound = document.getElementById('beepSound');
     let currentTrack = null;
-
     const musicCards = document.querySelectorAll('.music-card');
-musicCards.forEach(card => {
-  card.addEventListener('click', () => {
-    // Pause la musique en cours
-    if(currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
-    
-    // Supprime la classe active des autres cards
-    musicCards.forEach(c => c.classList.remove('active'));
-
-    const trackName = card.getAttribute('data-track');
-    if(trackName === 'track1') currentTrack = track1;
-    else if(trackName === 'track2') currentTrack = track2;
-    else currentTrack = null;
-
-    // Active la card sélectionnée
-    card.classList.add('active');
-
-    // Démarre la musique si disponible
-    if(currentTrack) currentTrack.play();
-    
-    // Change le texte ▶ / ■ en conséquence
-    musicCards.forEach(c => {
-      if(c !== card && c.getAttribute('data-track')) {
-        c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
-      }
+    musicCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // Pause la musique en cours
+        if (currentTrack) {
+          currentTrack.pause();
+          currentTrack.currentTime = 0;
+        }
+        // Supprime la classe active des autres cards
+        musicCards.forEach(c => c.classList.remove('active'));
+        const trackName = card.getAttribute('data-track');
+        if (trackName === 'track1') currentTrack = track1;
+        else if (trackName === 'track2') currentTrack = track2;
+        else currentTrack = null;
+        // Active la card sélectionnée
+        card.classList.add('active');
+        // Démarre la musique si disponible
+        if (currentTrack) currentTrack.play();
+        // Change le texte ▶ / ■ en conséquence
+        musicCards.forEach(c => {
+          if (c !== card && c.getAttribute('data-track')) {
+            c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
+          }
+        });
+        if (currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
+        else card.textContent = '🔇 Aucun';
+      });
     });
-    if(currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
-    else card.textContent = '🔇 Aucun';
-  });
-});
-
-
-
-    const exercises = [1,2,3,4];
-    const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"]; // noms anglais
+    const exercises = [1, 2, 3, 4];
+    const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"];
     const exerciseDuration = 70;
     const restDuration = 40;
+    const totalSets = 4; // 🔥 nombre de séries
     let currentExercise = 0;
+    let currentSet = 1; // commence à la 1ère série
     let timer = null;
     let remaining = 0;
     let inRest = false;
     let isPaused = false;
 
-    function startExercise(index){
+    function startExercise(index) {
       currentExercise = index;
       inRest = false;
       isPaused = false;
-      if(currentExercise >= exercises.length){
-        countdownValue.parentElement.style.display = 'none';
-        status.textContent = 'Séance terminée !';
-        bravoMessage.style.display = 'block';
-        restImage.style.display = 'none';
-        video.style.display = 'block';
-        return;
+      if (currentExercise >= exercises.length) {
+        // Série terminée : passe à la suivante
+        currentSet++;
+        if (currentSet > totalSets) {
+          countdownValue.parentElement.style.display = 'none';
+          status.textContent = 'Workout complete!';
+          bravoMessage.style.display = 'block';
+          restImage.style.display = 'none';
+          video.style.display = 'block';
+          return;
+        } else {
+          currentExercise = 0;
+          status.textContent = `Starting set ${currentSet}/${totalSets}...`;
+          setTimeout(() => startExercise(currentExercise), 3000); // petite pause de 3s entre les séries
+          return;
+        }
       }
-
       videoSource.src = `ex${exercises[currentExercise]}.mp4`;
       video.load();
       remaining = exerciseDuration;
       countdownValue.textContent = remaining;
       countdownValue.parentElement.style.display = 'flex';
       status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration} s`;
-
       restImage.style.display = 'none';
       video.style.display = 'block';
       video.currentTime = 0;
-      video.play().catch(()=>{});
-      if(currentTrack) currentTrack.play();
-
+      video.play().catch(() => {});
+      if (currentTrack) currentTrack.play();
       clearInterval(timer);
-      timer = setInterval(updateCountdown,1000);
+      timer = setInterval(updateCountdown, 1000);
     }
 
-    function startRest(){
+    function startRest() {
       inRest = true;
       isPaused = false;
       remaining = restDuration;
       countdownValue.textContent = remaining;
       status.textContent = `Repos — ${restDuration} s`;
-
       video.pause();
       video.style.display = 'none';
       restImage.style.display = 'block';
-
       clearInterval(timer);
-      timer = setInterval(updateCountdown,1000);
+      timer = setInterval(updateCountdown, 1000);
     }
 
-    function updateCountdown(){
-      if(isPaused) return;
+    function updateCountdown() {
+      if (isPaused) return;
       remaining--;
       countdownValue.textContent = remaining;
-      if(remaining <= 0){
+      // 🔊 Lecture du bip à 5 secondes de la fin
+      if (remaining === 5) {
+        beepSound.currentTime = 0;
+        beepSound.play().catch(() => {});
+      }
+      if (remaining <= 0) {
         clearInterval(timer);
-        if(inRest) startExercise(currentExercise + 1);
+        if (inRest) startExercise(currentExercise + 1);
         else startRest();
       }
     }
-
-    startBtn.addEventListener('click', ()=>{ bravoMessage.style.display='none'; startExercise(0); });
-
-    nextBtn.addEventListener('click', ()=>{
+    startBtn.addEventListener('click', () => {
+      bravoMessage.style.display = 'none';
+      startExercise(0);
+    });
+    nextBtn.addEventListener('click', () => {
       clearInterval(timer);
-      if(inRest) startExercise(currentExercise + 1);
+      if (inRest) startExercise(currentExercise + 1);
       else startRest();
     });
-
-    pauseBtn.addEventListener('click', ()=>{
+    pauseBtn.addEventListener('click', () => {
       isPaused = !isPaused;
-      if(isPaused){
+      if (isPaused) {
         status.textContent += ' (Pause)';
         video.pause();
-        if(currentTrack) currentTrack.pause();
+        if (currentTrack) currentTrack.pause();
       } else {
-        status.textContent = status.textContent.replace(' (Pause)','');
-        if(!inRest) video.play().catch(()=>{});
-        if(currentTrack) currentTrack.play();
+        status.textContent = status.textContent.replace(' (Pause)', '');
+        if (!inRest) video.play().catch(() => {});
+        if (currentTrack) currentTrack.play();
       }
     });
   </script>
 </body>
+
 </html>
