@@ -374,8 +374,8 @@
       if (isPaused) return;
       remaining--;
       countdownValue.textContent = remaining;
-      // 🔊 Lecture du bip à 4 secondes de la fin
-      if (remaining === 4) {
+      // 🔊 Lecture du bip à 5 secondes de la fin
+      if (remaining === 5) {
         beepSound.currentTime = 0;
         beepSound.play().catch(() => {});
       }
