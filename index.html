@@ -247,11 +247,11 @@
 </div>
 
 
-        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
+        <div class="bravo" id="bravoMessage">🎉 Bravo ! </div>
 
         <div id="finishOverlay">
           <div class="finish-content">
-            <h1>🎉TERMINÉ🎉</h1>
+            <h1>TERMINÉ!</h1>
             <p>Excellent travail tu as fini toutes les séries!💪</p>
           </div>
           <canvas id="confettiCanvas"></canvas>
@@ -276,7 +276,7 @@
           <div id="musicCards" class="music-row" style="margin-top:8px">
             <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div> 
             <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
-            <div class="music-card btn" data-track="" data-name="Aucun"> STOP 🔈</div>
+            <div class="music-card btn" data-track="" data-name="Aucun"> STOP </div>
           </div>
         </div>
 
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentSet++;
       if(currentSet>totalSets){
         countdownValue.parentElement.style.display='none';
-        status.textContent='Séance terminée ! 🎉';
+        status.textContent='Séance terminée !';
         bravoMessage.style.display='block';
         restImage.style.display='none';
         video.style.display='block';
