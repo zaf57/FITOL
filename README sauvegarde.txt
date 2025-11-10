@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         currentExercise=0;
         let pauseBetweenSets=10;
-        status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
+        status.textContent=`Nouvelle SÉRIE dans ${pauseBetweenSets}s`;
         restImage.style.display='block';
         video.style.display='none';
         countdownValue.parentElement.style.display='flex';
