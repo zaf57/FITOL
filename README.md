@@ -1,1 +1,209 @@
-# FITOL
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="logo-fitol.ico">
+  <link rel="stylesheet" href="style.css">
+  <title>FIT'OL</title>
+  <style>
+    :root{--bg:#0f0f10;--card:#121214;--accent:#5ce1e6;--muted:#9aa0a6;--white:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui;color:var(--white);background:linear-gradient(180deg,#0b0b0c 0%, #111113 100%);}
+    .container{max-width:980px;margin:36px auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px;justify-content: center;}
+    header h1{margin:0;font-size:28px;letter-spacing:1px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+    .player-area{margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:16px}
+    .video-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;border:4px solid #5ce1e6;box-shadow:0 0 20px #5ce1e6;padding: 4px;}
+    video,img{width:100%;height:100%;display:block;object-fit:cover;border-radius:12px}
+    .countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:right;pointer-events:none}
+    .countdown .badge{background: transparent ;padding:18px 26px;border-radius:12px;font-size:45px;font-weight:700;color: #5ce1e6}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .btn{padding:12px;border-radius:10px;background:var(--accent);border:0;color:var(--white);cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+    .music-select{display:flex;gap:12px;align-items:center;margin-top:8px}
+    .music-select label{cursor:pointer;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,.04)}
+    .music-select input{margin-right:8px}
+    .bravo{display:none;text-align:center;font-size:40px;color:var(--accent);animation:fadein 2s forwards;margin-top:20px}
+    @keyframes fadein{from{opacity:0} to{opacity:1}}
+    .control-row{display:flex;gap:30px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="logo-fitolblanctransp.png" alt="FIT'OL" style="width:48px;height:48px;border-radius:8px;background:#4b4b4b">
+      <h1>Hazır mı?</h1>
+    </header>
+
+<section class="player-area" style="display:flex;flex-direction:column;gap:16px">
+  <!-- Vidéo + repos + compteur -->
+  <div class="card video-wrap">
+    <div style="position:relative;height:0;padding-bottom:56.25%">
+      <video id="exerciseVideo" playsinline preload="metadata" controls style="position:absolute;inset:0;width:100%;height:100%">
+        <source id="videoSource" src="ex1.mp4" type="video/mp4">
+        Ton navigateur ne supporte pas la balise vidéo.
+      </video>
+      <img id="restImage" src="repos.png" style="position:absolute;inset:0;display:none">
+    </div>
+    <div class="countdown" id="countdownOverlay">
+      <div class="badge" id="countdownValue">70</div>
+    </div>
+    <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée 🎉</div>
+  </div>
+
+  <!-- Boutons et musique sous la vidéo -->
+  <aside class="side card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="muted">Statut</div>
+    <div id="status" style="margin-top:8px">Prêt — Démarre la séance.</div>
+
+    <div style="margin-top:12px">
+      <div class="muted">Choix de la musique</div>
+      <div class="music-select">
+        <label><input type="radio" name="music" value="track1"> Halay</label>
+        <label><input type="radio" name="music" value="track2"> Mix</label>
+       
+        <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="playMusic"style="padding: 17px;">▶</button>
+        <button class="btn" id="pauseMusic"style="padding: 17px;font-size: 17px;">■</button>
+      </div>
+      
+      </div>
+    
+    </div>
+
+    <div class="control-row">
+      <button class="btn" id="startBtn">Démarrer la séance</button>
+      
+      <button class="btn" id="pauseBtn" style="background:#999">Pause/Play</button>
+    </div>
+    <button class="btn" id="nextBtn" style="background:#5ce1e64f">Suivant</button>
+  </aside>
+</section>
+
+
+    <footer>FIT'OL — séance de 4 exercices • Développé pour prototype</footer>
+
+    <!-- Musiques -->
+    <audio id="track1" loop src="Halay15.mp3"></audio>
+    <audio id="track2" loop src="Mix15.mp3"></audio>
+  </div>
+
+  <script>
+    const video = document.getElementById('exerciseVideo');
+    const videoSource = document.getElementById('videoSource');
+    const restImage = document.getElementById('restImage');
+    const countdownValue = document.getElementById('countdownValue');
+    const status = document.getElementById('status');
+    const bravoMessage = document.getElementById('bravoMessage');
+
+    const startBtn = document.getElementById('startBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+
+    const track1 = document.getElementById('track1');
+    const track2 = document.getElementById('track2');
+    let currentTrack = null;
+
+    const musicRadios = document.querySelectorAll('input[name="music"]');
+    musicRadios.forEach(radio=>{
+      radio.addEventListener('change', e=>{
+        if(currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
+        if(e.target.value==='track1') currentTrack = track1;
+        else if(e.target.value==='track2') currentTrack = track2;
+        else currentTrack = null;
+      });
+    });
+
+    document.getElementById('playMusic').addEventListener('click', ()=>{ if(currentTrack) currentTrack.play(); });
+    document.getElementById('pauseMusic').addEventListener('click', ()=>{ if(currentTrack) currentTrack.pause(); });
+
+    const exercises = [1,2,3,4];
+    const exerciseDuration = 70;
+    const restDuration = 40;
+    let currentExercise = 0;
+    let timer = null;
+    let remaining = 0;
+    let inRest = false;
+    let isPaused = false;
+
+    function startExercise(index){
+      currentExercise = index;
+      inRest = false;
+      isPaused = false;
+      if(currentExercise >= exercises.length){
+        countdownValue.parentElement.style.display = 'none';
+        status.textContent = 'Séance terminée !';
+        bravoMessage.style.display = 'block';
+        restImage.style.display = 'none';
+        video.style.display = 'block';
+        return;
+      }
+
+      videoSource.src = `ex${exercises[currentExercise]}.mp4`;
+      video.load();
+      remaining = exerciseDuration;
+      countdownValue.textContent = remaining;
+      countdownValue.parentElement.style.display = 'flex';
+      status.textContent = `Exercice ${exercises[currentExercise]} — ${exerciseDuration} s`;
+
+      restImage.style.display = 'none';
+      video.style.display = 'block';
+      video.currentTime = 0;
+      video.play().catch(()=>{});
+      if(currentTrack) currentTrack.play();
+
+      clearInterval(timer);
+      timer = setInterval(updateCountdown,1000);
+    }
+
+    function startRest(){
+      inRest = true;
+      isPaused = false;
+      remaining = restDuration;
+      countdownValue.textContent = remaining;
+      status.textContent = `Repos — ${restDuration} s`;
+
+      video.pause();
+      video.style.display = 'none';
+      restImage.style.display = 'block';
+
+      clearInterval(timer);
+      timer = setInterval(updateCountdown,1000);
+    }
+
+    function updateCountdown(){
+      if(isPaused) return;
+      remaining--;
+      countdownValue.textContent = remaining;
+      if(remaining <= 0){
+        clearInterval(timer);
+        if(inRest) startExercise(currentExercise + 1);
+        else startRest();
+      }
+    }
+
+    startBtn.addEventListener('click', ()=>{ bravoMessage.style.display='none'; startExercise(0); });
+
+    nextBtn.addEventListener('click', ()=>{
+      clearInterval(timer);
+      if(inRest) startExercise(currentExercise + 1);
+      else startRest();
+    });
+
+    pauseBtn.addEventListener('click', ()=>{
+      isPaused = !isPaused;
+      if(isPaused){
+        status.textContent += ' (Pause)';
+        video.pause();
+        if(currentTrack) currentTrack.pause();
+      } else {
+        status.textContent = status.textContent.replace(' (Pause)','');
+        if(!inRest) video.play().catch(()=>{});
+        if(currentTrack) currentTrack.play();
+      }
+    });
+  </script>
+</body>
+</html>
