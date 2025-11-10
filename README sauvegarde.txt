@@ -267,7 +267,7 @@
         <div class="control-row">
           <button class="btn" id="startBtn">Démarrer la séance</button>
           <button class="btn" id="pauseBtn" style="background:#999">⏸/ ▶</button>
-          <button class="btn" id="arreterBtn" style="background:#c0392b">⛔ Arrêter</button>
+          <button class="btn" id="stopBtn" style="background:orange">Arrêter</button>
 
         </div>
 
@@ -313,196 +313,215 @@
     <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
   </div>
 
-  <script>
-    const video = document.getElementById('exerciseVideo');
-    const videoSource = document.getElementById('videoSource');
-    const restImage = document.getElementById('restImage');
-    const countdownValue = document.getElementById('countdownValue');
-    const status = document.getElementById('status');
-    const currentSetDisplay = document.getElementById('currentSet');
-    const seriesOverlay = document.getElementById('seriesOverlay');
-    const bravoMessage = document.getElementById('bravoMessage');
-    const finishOverlay = document.getElementById('finishOverlay');
-    const startBtn = document.getElementById('startBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const track1 = document.getElementById('track1');
-    const track2 = document.getElementById('track2');
-    const beepSound = document.getElementById('beepSound');
-    const progressBar = document.getElementById('progressBar');
+   <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('exerciseVideo');
+  const videoSource = document.getElementById('videoSource');
+  const restImage = document.getElementById('restImage');
+  const countdownValue = document.getElementById('countdownValue');
+  const status = document.getElementById('status');
+  const currentSetDisplay = document.getElementById('currentSet');
+  const seriesOverlay = document.getElementById('seriesOverlay');
+  const bravoMessage = document.getElementById('bravoMessage');
+  const finishOverlay = document.getElementById('finishOverlay');
 
-    let currentTrack = null;
-    let currentExercise = 0;
-    let currentSet = 1;
-    let timer = null;
-    let remaining = 0;
-    let inRest = false;
-    let isPaused = false;
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const stopBtn = document.getElementById('stopBtn');
 
-    const musicCards = document.querySelectorAll('.music-card');
-    musicCards.forEach(card => {
-      card.addEventListener('click', () => {
-        if (currentTrack) { currentTrack.pause(); currentTrack.currentTime = 0; }
-        musicCards.forEach(c => c.classList.remove('active'));
-        const trackName = card.getAttribute('data-track');
-        if (trackName === 'track1') currentTrack = track1;
-        else if (trackName === 'track2') currentTrack = track2;
-        else currentTrack = null;
-        card.classList.add('active');
-        if (currentTrack) currentTrack.play();
-      });
+  const track1 = document.getElementById('track1');
+  const track2 = document.getElementById('track2');
+  const beepSound = document.getElementById('beepSound');
+  const progressBar = document.getElementById('progressBar');
+
+  let currentTrack = null;
+  let currentExercise = 0;
+  let currentSet = 1;
+  let timer = null;
+  let remaining = 0;
+  let inRest = false;
+  let isPaused = false;
+
+  const musicCards = document.querySelectorAll('.music-card');
+  musicCards.forEach(card => {
+    card.addEventListener('click', () => {
+      if (currentTrack) { currentTrack.pause(); currentTrack.currentTime = 0; }
+      musicCards.forEach(c => c.classList.remove('active'));
+      const trackName = card.getAttribute('data-track');
+      if (trackName === 'track1') currentTrack = track1;
+      else if (trackName === 'track2') currentTrack = track2; 
+      else currentTrack = null;
+      card.classList.add('active');
+      if (currentTrack) currentTrack.play();
     });
+  });
 
-    const exercises = [1,2,3,4];
-    const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"];
-    const exerciseDuration = 70;
-    const restDuration = 40;
-    const totalSets = 4;
+  const exercises = [1,2,3,4];
+  const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"];
+  const exerciseDuration = 70;
+  const restDuration = 40;
+  const totalSets = 4;
 
-    function updateSeriesDisplay(){
-      seriesOverlay.textContent = `S. ${currentSet}`;
-      currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
-    }
+  function updateSeriesDisplay(){
+    seriesOverlay.textContent = `S. ${currentSet}`;
+    currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
+  }
 
-    function showFinishOverlay(){
-      finishOverlay.style.display = 'flex';
-      launchConfetti();
-      setTimeout(()=>{ finishOverlay.style.display='none'; },7000);
-    }
+  function showFinishOverlay(){
+    finishOverlay.style.display = 'flex';
+    launchConfetti();
+    setTimeout(()=>{ finishOverlay.style.display='none'; },7000);
+  }
 
-    function startExercise(index){
-      currentExercise = index;
-      inRest = false;
-      isPaused = false;
+  function startExercise(index){
+    currentExercise = index;
+    inRest = false;
+    isPaused = false;
 
-      if(currentExercise>=exercises.length){
-        currentSet++;
-        if(currentSet>totalSets){
-          countdownValue.parentElement.style.display='none';
-          status.textContent='Séance terminée ! 🎉';
-          bravoMessage.style.display='block';
-          restImage.style.display='none';
-          video.style.display='block';
-          showFinishOverlay();
-          return;
-        } else {
-          currentExercise=0;
-          let pauseBetweenSets=10;
-          status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
-          restImage.style.display='block';
-          video.style.display='none';
-          countdownValue.parentElement.style.display='flex';
-          remaining=pauseBetweenSets;
+    if(currentExercise>=exercises.length){
+      currentSet++;
+      if(currentSet>totalSets){
+        countdownValue.parentElement.style.display='none';
+        status.textContent='Séance terminée ! 🎉';
+        bravoMessage.style.display='block';
+        restImage.style.display='none';
+        video.style.display='block';
+        showFinishOverlay();
+        return;
+      } else {
+        currentExercise=0;
+        let pauseBetweenSets=10;
+        status.textContent=`Prochaine SÉRIE va commencer dans ${pauseBetweenSets}s`;
+        restImage.style.display='block';
+        video.style.display='none';
+        countdownValue.parentElement.style.display='flex';
+        remaining=pauseBetweenSets;
+        countdownValue.textContent=remaining;
+        clearInterval(timer);
+        timer=setInterval(()=>{
+          remaining--;
           countdownValue.textContent=remaining;
-          clearInterval(timer);
-          timer=setInterval(()=>{
-            remaining--;
-            countdownValue.textContent=remaining;
-            if(remaining===4){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
-            if(remaining<=0){ clearInterval(timer); restImage.style.display='none'; video.style.display='block'; updateSeriesDisplay(); startExercise(currentExercise); }
-          },1000);
-          return;
-        }
+          if(remaining===4){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
+          if(remaining<=0){ clearInterval(timer); restImage.style.display='none'; video.style.display='block'; updateSeriesDisplay(); startExercise(currentExercise); }
+        },1000);
+        return;
       }
-
-      videoSource.src=`ex${exercises[currentExercise]}.mp4`;
-      video.load();
-      remaining=exerciseDuration;
-      countdownValue.textContent=remaining;
-      countdownValue.parentElement.style.display='flex';
-      status.textContent=`${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
-      restImage.style.display='none';
-      video.style.display='block';
-      video.currentTime=0;
-      video.play().catch(()=>{});
-      if(currentTrack) currentTrack.play();
-      updateSeriesDisplay();
-      clearInterval(timer);
-      timer=setInterval(updateCountdown,1000);
     }
 
-    function startRest(){
-      inRest=true;
-      isPaused=false;
-      remaining=restDuration;
-      countdownValue.textContent=remaining;
-      status.textContent=`Repos — ${restDuration} s`;
+    videoSource.src=`ex${exercises[currentExercise]}.mp4`;
+    video.load();
+    remaining=exerciseDuration;
+    countdownValue.textContent=remaining;
+    countdownValue.parentElement.style.display='flex';
+    status.textContent=`${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
+    restImage.style.display='none';
+    video.style.display='block';
+    video.currentTime=0;
+    video.play().catch(()=>{});
+    if(currentTrack) currentTrack.play();
+    updateSeriesDisplay();
+    clearInterval(timer);
+    timer=setInterval(updateCountdown,1000);
+  }
+
+  function startRest(){
+    inRest=true;
+    isPaused=false;
+    remaining=restDuration;
+    countdownValue.textContent=remaining;
+    status.textContent=`Repos — ${restDuration} s`;
+    video.pause();
+    video.style.display='none';
+    restImage.style.display='block';
+    clearInterval(timer);
+    timer=setInterval(updateCountdown,1000);
+  }
+
+  function updateCountdown(){
+    if(isPaused) return;
+    remaining--;
+    countdownValue.textContent=remaining;
+
+    const totalTime = inRest ? restDuration : exerciseDuration;
+    const percent = (remaining / totalTime) * 100;
+    progressBar.style.width = percent + '%';
+
+    if(remaining===5){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
+    if(remaining<=0){ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); }
+  }
+
+  // Boutons
+  startBtn.addEventListener('click', ()=>{ bravoMessage.style.display='none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
+  nextBtn.addEventListener('click', ()=>{ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); });
+  pauseBtn.addEventListener('click', ()=>{
+    isPaused = !isPaused;
+    if(isPaused){
+      status.textContent += ' (Pause)';
       video.pause();
-      video.style.display='none';
-      restImage.style.display='block';
+      if(currentTrack) currentTrack.pause();
+    } else {
+      status.textContent = status.textContent.replace(' (Pause)','');
+      if(!inRest) video.play().catch(()=>{});
+      if(currentTrack) currentTrack.play();
+    }
+  });
+
+  stopBtn.addEventListener('click', ()=>{
+    if(confirm("Voulez-vous vraiment arrêter la séance ?")){
+      if(currentTrack){ currentTrack.pause(); currentTrack.currentTime=0; }
+      video.pause();
       clearInterval(timer);
-      timer=setInterval(updateCountdown,1000);
+      location.reload();
     }
+  });
 
-    function updateCountdown(){
-      if(isPaused) return;
-      remaining--;
-      countdownValue.textContent=remaining;
-      
-        // Calcul du pourcentage restant
-  const totalTime = inRest ? restDuration : exerciseDuration;
-  const percent = (remaining / totalTime) * 100;
-  progressBar.style.width = percent + '%';
-      
-      if(remaining===5){ beepSound.currentTime=0; beepSound.play().catch(()=>{}); }
-      if(remaining<=0){ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); }
+  function launchConfetti(){
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    const confettiCount=150;
+    const confettis=[];
+    for(let i=0;i<confettiCount;i++){
+      confettis.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height-canvas.height,
+        r: Math.random()*6+4,
+        d: Math.random()*confettiCount,
+        color:`hsl(${Math.random()*360},100%,50%)`,
+        tilt:Math.random()*10-10,
+        tiltAngleIncremental:Math.random()*0.07+0.05
+      });
     }
-
-    
-    
-    startBtn.addEventListener('click',()=>{ bravoMessage.style.display='none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
-    nextBtn.addEventListener('click',()=>{ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); });
-    pauseBtn.addEventListener('click',()=>{ isPaused=!isPaused; if(isPaused){ status.textContent+=' (Pause)'; video.pause(); if(currentTrack)currentTrack.pause(); } else { status.textContent=status.textContent.replace(' (Pause)',''); 
-    if(!inRest)video.play().catch(()=>{}); 
-    if(currentTrack)currentTrack.play(); } });
-
-    
-    
-    function launchConfetti(){
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width=window.innerWidth;
-      canvas.height=window.innerHeight;
-      const confettiCount=150;
-      const confettis=[];
-      for(let i=0;i<confettiCount;i++){
-        confettis.push({
-          x: Math.random()*canvas.width,
-          y: Math.random()*canvas.height-canvas.height,
-          r: Math.random()*6+4,
-          d: Math.random()*confettiCount,
-          color:`hsl(${Math.random()*360},100%,50%)`,
-          tilt:Math.random()*10-10,
-          tiltAngleIncremental:Math.random()*0.07+0.05
-        });
-      }
-      let angle=0;
-      function draw(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        confettis.forEach(c=>{
-          ctx.beginPath();
-          ctx.lineWidth=c.r/2;
-          ctx.strokeStyle=c.color;
-          ctx.moveTo(c.x+c.tilt+c.r/4,c.y);
-          ctx.lineTo(c.x+c.tilt,c.y+c.tilt+c.r/4);
-          ctx.stroke();
-        });
-        update();
-      }
-      function update(){
-        angle+=0.01;
-        confettis.forEach(c=>{
-          c.tiltAngleIncremental+=0.01;
-          c.y+=(Math.cos(angle+c.d)+3+c.r/2)/2;
-          c.x+=Math.sin(angle);
-          c.tilt=Math.sin(c.tiltAngleIncremental)*15;
-          if(c.y>canvas.height){ c.y=-10; c.x=Math.random()*canvas.width; }
-        });
-      }
-      function animate(){ draw(); requestAnimationFrame(animate); }
-      animate();
-      setTimeout(()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); },7000);
+    let angle=0;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      confettis.forEach(c=>{
+        ctx.beginPath();
+        ctx.lineWidth=c.r/2;
+        ctx.strokeStyle=c.color;
+        ctx.moveTo(c.x+c.tilt+c.r/4,c.y);
+        ctx.lineTo(c.x+c.tilt,c.y+c.tilt+c.r/4);
+        ctx.stroke();
+      });
+      update();
     }
-  </script>
+    function update(){
+      angle+=0.01;
+      confettis.forEach(c=>{
+        c.tiltAngleIncremental+=0.01;
+        c.y+=(Math.cos(angle+c.d)+3+c.r/2)/2;
+        c.x+=Math.sin(angle);
+        c.tilt=Math.sin(c.tiltAngleIncremental)*15;
+        if(c.y>canvas.height){ c.y=-10; c.x=Math.random()*canvas.width; }
+      });
+    }
+    function animate(){ draw(); requestAnimationFrame(animate); }
+    animate();
+    setTimeout(()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); },7000);
+  }
+});
+</script>
 </body>
 </html>
