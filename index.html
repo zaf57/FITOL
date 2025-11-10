@@ -121,23 +121,21 @@
       font-size: 13px
     }
 
-    .music-select {
+    .music-row {
       display: flex;
       gap: 12px;
-      align-items: center;
-      margin-top: 8px
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
     }
 
-    .music-select label {
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, .04)
+    .music-row::-webkit-scrollbar {
+      height: 6px;
     }
 
-    .music-select input {
-      margin-right: 8px
+    .music-row::-webkit-scrollbar-thumb {
+      background: rgba(92, 225, 230, 0.5);
+      border-radius: 3px;
     }
 
     .bravo {
@@ -150,37 +148,24 @@
     }
 
     @keyframes fadein {
-      from {
-        opacity: 0
-      }
-
-      to {
-        opacity: 1
-      }
+      from { opacity: 0 }
+      to { opacity: 1 }
     }
 
-    .control-row {
-      display: flex;
-      gap: 30px;
-      margin-top: 8px
-    }
-
-    .music-row {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
-      /* Firefox */
-    }
-
-    .music-row::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    .music-row::-webkit-scrollbar-thumb {
-      background: rgba(92, 225, 230, 0.5);
-      border-radius: 3px;
+    #seriesOverlay {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.5);
+      color: #5ce1e6;
+      font-weight: 700;
+      font-size: 24px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.5s ease;
     }
   </style>
 </head>
@@ -194,7 +179,6 @@
     </header>
 
     <section class="player-area" style="display:flex;flex-direction:column;gap:16px">
-      <!-- Vidéo + repos + compteur -->
       <div class="card video-wrap">
         <div style="position:relative;height:0;padding-bottom:56.25%">
           <video id="exerciseVideo" playsinline preload="metadata" controls style="position:absolute;inset:0;width:100%;height:100%">
@@ -202,47 +186,26 @@
             Ton navigateur ne supporte pas la balise vidéo.
           </video>
           <img id="restImage" alt="repos" src="repos.png" style="position:absolute;inset:0;display:none">
-          <div id="seriesOverlay" style="
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0,0,0,0.5);
-  color: #5ce1e6;
-  font-weight: 700;
-  font-size: 24px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.5s ease;
-">Série 1/4</div>
-
+          <div id="seriesOverlay">Série 1/4</div>
         </div>
         <div class="countdown" id="countdownOverlay">
           <div class="badge" id="countdownValue">70</div>
         </div>
         <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
-        <!-- Animation plein écran -->
         <div id="finishOverlay">
           <div class="finish-content">
             <h1>🎉TERMINÉ🎉</h1>
-            <p>Excellent travail tu a
-              fini toutes les séries!💪</p>
+            <p>Excellent travail tu as fini toutes les séries!💪</p>
           </div>
-          <!-- Conteneur pour confettis -->
           <canvas id="confettiCanvas"></canvas>
         </div>
-
       </div>
 
-      <!-- Boutons et musique sous la vidéo -->
       <aside class="side card" style="display:flex;flex-direction:column;gap:12px">
         <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;">
-  <div id="status">Prêt? — Démarre la séance.</div>
-  <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
-</div>
-
+          <div id="status">Prêt? — Démarre la séance.</div>
+          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
+        </div>
 
         <div class="control-row">
           <button class="btn" id="startBtn">Démarrer la séance</button>
@@ -260,295 +223,176 @@
 
         <button class="btn" id="nextBtn" style="background:#5ce1e64f"> Passer l'exercice ou repos</button>
       </aside>
-
     </section>
 
     <section class="card" style="margin-top:24px; text-align:center;">
       <h2 style="color:#5ce1e6; margin-bottom:12px;">Présentation des exercices 💪</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; text-align:center;">
-
         <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
           <h3 style="margin:6px 0; color:#ffffff;">Knee-Tap</h3>
           <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec claquement des mains dessous.</p>
         </div>
-
         <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
           <h3 style="margin:6px 0; color:#ffffff;">Side-Knee Reach</h3>
           <p style="color:#9aa0a6; font-size:14px;">Montées de genoux latérales, mains derrière la tête.</p>
         </div>
-
         <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
           <h3 style="margin:6px 0; color:#ffffff;">Knee-Hit Cross</h3>
           <p style="color:#9aa0a6; font-size:14px;">Montées de genoux avec les mains croisées touchant le genou.</p>
         </div>
-
         <div style="background:#1a1a1d; padding:12px; border-radius:10px;">
           <h3 style="margin:6px 0; color:#ffffff;">Squat</h3>
           <p style="color:#9aa0a6; font-size:14px;">Squats classiques pour renforcer les jambes et les fessiers.</p>
         </div>
-
       </div>
     </section>
 
     <footer>FIT'OL — séance de 4 exercices • Développé par KZ</footer>
 
-    <!-- Musiques -->
     <audio id="track1" loop src="Halay15.mp3"></audio>
     <audio id="track2" loop src="Mix15.mp3"></audio>
     <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
-
   </div>
 
   <script>
- const video = document.getElementById('exerciseVideo');
-const videoSource = document.getElementById('videoSource');
-const restImage = document.getElementById('restImage');
-const countdownValue = document.getElementById('countdownValue');
-const status = document.getElementById('status');
-const Message = document.getElementById('bravoMessage');
-const startBtn = document.getElementById('startBtn');
-const nextBtn = document.getElementById('nextBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const track1 = document.getElementById('track1');
-const track2 = document.getElementById('track2');
-const beepSound = document.getElementById('beepSound');
-const seriesOverlay = document.getElementById('seriesOverlay');
+    // --- JS simplifié et corrigé ---
+    const video = document.getElementById('exerciseVideo');
+    const videoSource = document.getElementById('videoSource');
+    const restImage = document.getElementById('restImage');
+    const countdownValue = document.getElementById('countdownValue');
+    const status = document.getElementById('status');
+    const currentSetDisplay = document.getElementById('currentSet');
+    const seriesOverlay = document.getElementById('seriesOverlay');
+    const bravoMessage = document.getElementById('bravoMessage');
+    const startBtn = document.getElementById('startBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const track1 = document.getElementById('track1');
+    const track2 = document.getElementById('track2');
+    const beepSound = document.getElementById('beepSound');
 
-let currentTrack = null;
-let currentExercise = 0;
-let currentSet = 1; // commence à la 1ère série
-let timer = null;
-let remaining = 0;
-let inRest = false;
-let isPaused = false;
+    let currentTrack = null;
+    let currentExercise = 0;
+    let currentSet = 1;
+    let timer = null;
+    let remaining = 0;
+    let inRest = false;
+    let isPaused = false;
 
-const musicCards = document.querySelectorAll('.music-card');
-musicCards.forEach(card => {
-  card.addEventListener('click', () => {
-    if (currentTrack) {
-      currentTrack.pause();
-      currentTrack.currentTime = 0;
-    }
-    musicCards.forEach(c => c.classList.remove('active'));
-    const trackName = card.getAttribute('data-track');
-    if (trackName === 'track1') currentTrack = track1;
-    else if (trackName === 'track2') currentTrack = track2;
-    else currentTrack = null;
-    card.classList.add('active');
-    if (currentTrack) currentTrack.play();
-    musicCards.forEach(c => {
-      if (c !== card && c.getAttribute('data-track')) {
-        c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
-      }
-    });
-    if (currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
-    else card.textContent = '🔇 Aucun';
-  });
-});
-
-const exercises = [1, 2, 3, 4];
-const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"];
-const exerciseDuration = 70;
-const restDuration = 40;
-const totalSets = 4; // nombre de séries
-
-// --- Fonctions overlay série ---
-function showSeriesOverlay() {
-  seriesOverlay.textContent = `Série ${currentSet}/${totalSets}`;
-  seriesOverlay.style.opacity = '1';
-  seriesOverlay.style.transform = 'scale(1.1)';
-  setTimeout(() => {
-    seriesOverlay.style.transform = 'scale(1)';
-  }, 500);
-  setTimeout(() => {
-    seriesOverlay.style.opacity = '0';
-  }, 2000);
-}
-
-// --- Démarrage exercice ---
-function startExercise(index) {
-  currentExercise = index;
-  inRest = false;
-  isPaused = false;
-
-  if (currentExercise >= exercises.length) {
-    currentSet++;
-    if (currentSet > totalSets) {
-      countdownValue.parentElement.style.display = 'none';
-      status.textContent = 'Workout complete!';
-      Message.style.display = 'block';
-      restImage.style.display = 'none';
-      video.style.display = 'block';
-      const finishOverlay = document.getElementById('finishOverlay');
-      finishOverlay.style.display = 'flex';
-      launchConfetti();
-      setTimeout(() => {
-        finishOverlay.style.display = 'none';
-      }, 7000);
-      return;
-    } else {
-      currentExercise = 0;
-      let pauseBetweenSets = 10;
-      status.textContent = `Prochaine SÉRIE ${currentSet}/${totalSets} dans ${pauseBetweenSets}s`;
-      restImage.style.display = 'block';
-      video.style.display = 'none';
-      countdownValue.parentElement.style.display = 'flex';
-      remaining = pauseBetweenSets;
-      countdownValue.textContent = remaining;
-      clearInterval(timer);
-      timer = setInterval(() => {
-        remaining--;
-        countdownValue.textContent = remaining;
-        if (remaining === 4) {
-          beepSound.currentTime = 0;
-          beepSound.play().catch(() => {});
+    const musicCards = document.querySelectorAll('.music-card');
+    musicCards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (currentTrack) {
+          currentTrack.pause();
+          currentTrack.currentTime = 0;
         }
-        if (remaining <= 0) {
-          clearInterval(timer);
+        musicCards.forEach(c => c.classList.remove('active'));
+        const trackName = card.getAttribute('data-track');
+        if (trackName === 'track1') currentTrack = track1;
+        else if (trackName === 'track2') currentTrack = track2;
+        else currentTrack = null;
+        card.classList.add('active');
+        if (currentTrack) currentTrack.play();
+        musicCards.forEach(c => {
+          if (c !== card && c.getAttribute('data-track')) {
+            c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
+          }
+        });
+        if (currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
+        else card.textContent = '🔇 Aucun';
+      });
+    });
+
+    const exercises = [1, 2, 3, 4];
+    const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"];
+    const exerciseDuration = 70;
+    const restDuration = 40;
+    const totalSets = 4;
+
+    function updateSeriesDisplay() {
+      currentSetDisplay.textContent = `Série ${currentSet}/${totalSets}`;
+      seriesOverlay.textContent = `Série ${currentSet}/${totalSets}`;
+      seriesOverlay.style.opacity = '1';
+      seriesOverlay.style.transform = 'scale(1.1)';
+      setTimeout(() => { seriesOverlay.style.transform = 'scale(1)'; }, 500);
+      setTimeout(() => { seriesOverlay.style.opacity = '0'; }, 2000);
+    }
+
+    function startExercise(index) {
+      currentExercise = index;
+      inRest = false;
+      isPaused = false;
+
+      if (currentExercise >= exercises.length) {
+        currentSet++;
+        if (currentSet > totalSets) {
+          countdownValue.parentElement.style.display = 'none';
+          status.textContent = 'Workout complete!';
+          bravoMessage.style.display = 'block';
           restImage.style.display = 'none';
           video.style.display = 'block';
-          showSeriesOverlay();
-          startExercise(currentExercise);
+          return;
+        } else {
+          currentExercise = 0;
+          let pauseBetweenSets = 10;
+          status.textContent = `Prochaine SÉRIE ${currentSet}/${totalSets} dans ${pauseBetweenSets}s`;
+          restImage.style.display = 'block';
+          video.style.display = 'none';
+          countdownValue.parentElement.style.display = 'flex';
+          remaining = pauseBetweenSets;
+          countdownValue.textContent = remaining;
+          clearInterval(timer);
+          timer = setInterval(() => {
+            remaining--;
+            countdownValue.textContent = remaining;
+            if (remaining === 4) { beepSound.currentTime = 0; beepSound.play().catch(() => {}); }
+            if (remaining <= 0) { clearInterval(timer); restImage.style.display = 'none'; video.style.display = 'block'; updateSeriesDisplay(); startExercise(currentExercise); }
+          }, 1000);
+          return;
         }
-      }, 1000);
-      return;
-    }
-  }
-
-  // --- Code principal pour lancer l'exercice ---
-  videoSource.src = `ex${exercises[currentExercise]}.mp4`;
-  video.load();
-  remaining = exerciseDuration;
-  countdownValue.textContent = remaining;
-  countdownValue.parentElement.style.display = 'flex';
-  status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
-  restImage.style.display = 'none';
-  video.style.display = 'block';
-  video.currentTime = 0;
-  video.play().catch(() => {});
-  if (currentTrack) currentTrack.play();
-  showSeriesOverlay();
-  clearInterval(timer);
-  timer = setInterval(updateCountdown, 1000);
-}
-
-// --- Démarrage repos ---
-function startRest() {
-  inRest = true;
-  isPaused = false;
-  remaining = restDuration;
-  countdownValue.textContent = remaining;
-  status.textContent = `Repos — ${restDuration} s`;
-  video.pause();
-  video.style.display = 'none';
-  restImage.style.display = 'block';
-  clearInterval(timer);
-  timer = setInterval(updateCountdown, 1000);
-}
-
-// --- Countdown ---
-function updateCountdown() {
-  if (isPaused) return;
-  remaining--;
-  countdownValue.textContent = remaining;
-  if (remaining === 5) {
-    beepSound.currentTime = 0;
-    beepSound.play().catch(() => {});
-  }
-  if (remaining <= 0) {
-    clearInterval(timer);
-    if (inRest) startExercise(currentExercise + 1);
-    else startRest();
-  }
-}
-
-// --- Boutons ---
-startBtn.addEventListener('click', () => {
-  Message.style.display = 'none';
-  currentSet = 1;
-  currentExercise = 0;
-  showSeriesOverlay();
-  startExercise(0);
-});
-
-nextBtn.addEventListener('click', () => {
-  clearInterval(timer);
-  if (inRest) startExercise(currentExercise + 1);
-  else startRest();
-});
-
-pauseBtn.addEventListener('click', () => {
-  isPaused = !isPaused;
-  if (isPaused) {
-    status.textContent += ' (Pause)';
-    video.pause();
-    if (currentTrack) currentTrack.pause();
-  } else {
-    status.textContent = status.textContent.replace(' (Pause)', '');
-    if (!inRest) video.play().catch(() => {});
-    if (currentTrack) currentTrack.play();
-  }
-});
-
-// --- Confettis ---
-function launchConfetti() {
-  const canvas = document.getElementById('confettiCanvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const confettiCount = 150;
-  const confettis = [];
-  for (let i = 0; i < confettiCount; i++) {
-    confettis.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 6 + 4,
-      d: Math.random() * confettiCount,
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-      tilt: Math.random() * 10 - 10,
-      tiltAngleIncremental: Math.random() * 0.07 + 0.05
-    });
-  }
-  let angle = 0;
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confettis.forEach(c => {
-      ctx.beginPath();
-      ctx.lineWidth = c.r / 2;
-      ctx.strokeStyle = c.color;
-      ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
-      ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
-      ctx.stroke();
-    });
-    update();
-  }
-
-  function update() {
-    angle += 0.01;
-    confettis.forEach(c => {
-      c.tiltAngleIncremental += 0.01;
-      c.y += (Math.cos(angle + c.d) + 3 + c.r / 2) / 2;
-      c.x += Math.sin(angle);
-      c.tilt = Math.sin(c.tiltAngleIncremental) * 15;
-      if (c.y > canvas.height) {
-        c.y = -10;
-        c.x = Math.random() * canvas.width;
       }
-    });
-  }
 
-  function animate() {
-    draw();
-    requestAnimationFrame(animate);
-  }
-  animate();
+      videoSource.src = `ex${exercises[currentExercise]}.mp4`;
+      video.load();
+      remaining = exerciseDuration;
+      countdownValue.textContent = remaining;
+      countdownValue.parentElement.style.display = 'flex';
+      status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
+      restImage.style.display = 'none';
+      video.style.display = 'block';
+      video.currentTime = 0;
+      video.play().catch(() => {});
+      if (currentTrack) currentTrack.play();
+      updateSeriesDisplay();
+      clearInterval(timer);
+      timer = setInterval(updateCountdown, 1000);
+    }
 
-  setTimeout(() => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }, 7000);
-}
+    function startRest() {
+      inRest = true;
+      isPaused = false;
+      remaining = restDuration;
+      countdownValue.textContent = remaining;
+      status.textContent = `Repos — ${restDuration} s`;
+      video.pause();
+      video.style.display = 'none';
+      restImage.style.display = 'block';
+      clearInterval(timer);
+      timer = setInterval(updateCountdown, 1000);
+    }
+
+    function updateCountdown() {
+      if (isPaused) return;
+      remaining--;
+      countdownValue.textContent = remaining;
+      if (remaining === 5) { beepSound.currentTime = 0; beepSound.play().catch(() => {}); }
+      if (remaining <= 0) { clearInterval(timer); if (inRest) startExercise(currentExercise + 1); else startRest(); }
+    }
+
+    startBtn.addEventListener('click', () => { bravoMessage.style.display = 'none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
+    nextBtn.addEventListener('click', () => { clearInterval(timer); if (inRest) startExercise(currentExercise+1); else startRest(); });
+    pauseBtn.addEventListener('click', () => { isPaused = !isPaused; if(isPaused){status.textContent+=' (Pause)'; video.pause(); if(currentTrack)currentTrack.pause();}else{status.textContent=status.textContent.replace(' (Pause)',''); if(!inRest)video.play().catch(()=>{}); if(currentTrack)currentTrack.play();} });
   </script>
-</body>
 
+</body>
 </html>
