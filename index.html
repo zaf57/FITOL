@@ -202,6 +202,22 @@
             Ton navigateur ne supporte pas la balise vidéo.
           </video>
           <img id="restImage" alt="repos" src="repos.png" style="position:absolute;inset:0;display:none">
+          <div id="seriesOverlay" style="
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.5);
+  color: #5ce1e6;
+  font-weight: 700;
+  font-size: 24px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.5s ease;
+">Série 1/4</div>
+
         </div>
         <div class="countdown" id="countdownOverlay">
           <div class="badge" id="countdownValue">70</div>
@@ -284,241 +300,254 @@
   </div>
 
   <script>
-  const video = document.getElementById('exerciseVideo');
-  const videoSource = document.getElementById('videoSource');
-  const restImage = document.getElementById('restImage');
-  const countdownValue = document.getElementById('countdownValue');
-  const status = document.getElementById('status');
-  const currentSetDisplay = document.getElementById('currentSet');
-  const Message = document.getElementById('bravoMessage');
-  const startBtn = document.getElementById('startBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const track1 = document.getElementById('track1');
-  const track2 = document.getElementById('track2');
-  const beepSound = document.getElementById('beepSound');
-  let currentTrack = null;
+ const video = document.getElementById('exerciseVideo');
+const videoSource = document.getElementById('videoSource');
+const restImage = document.getElementById('restImage');
+const countdownValue = document.getElementById('countdownValue');
+const status = document.getElementById('status');
+const Message = document.getElementById('bravoMessage');
+const startBtn = document.getElementById('startBtn');
+const nextBtn = document.getElementById('nextBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const track1 = document.getElementById('track1');
+const track2 = document.getElementById('track2');
+const beepSound = document.getElementById('beepSound');
+const seriesOverlay = document.getElementById('seriesOverlay');
 
-  const musicCards = document.querySelectorAll('.music-card');
-  musicCards.forEach(card => {
-    card.addEventListener('click', () => {
-      if (currentTrack) {
-        currentTrack.pause();
-        currentTrack.currentTime = 0;
-      }
-      musicCards.forEach(c => c.classList.remove('active'));
-      const trackName = card.getAttribute('data-track');
-      if (trackName === 'track1') currentTrack = track1;
-      else if (trackName === 'track2') currentTrack = track2;
-      else currentTrack = null;
+let currentTrack = null;
+let currentExercise = 0;
+let currentSet = 1; // commence à la 1ère série
+let timer = null;
+let remaining = 0;
+let inRest = false;
+let isPaused = false;
 
-      card.classList.add('active');
-      if (currentTrack) currentTrack.play();
-
-      musicCards.forEach(c => {
-        if (c !== card && c.getAttribute('data-track')) {
-          c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
-        }
-      });
-      if (currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
-      else card.textContent = '🔇 Aucun';
-    });
-  });
-
-  const exercises = [1, 2, 3, 4];
-  const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"];
-  const exerciseDuration = 70;
-  const restDuration = 40;
-  const totalSets = 4; // nombre de séries
-  let currentExercise = 0;
-  let currentSet = 1; // commence à la 1ère série
-  let timer = null;
-  let remaining = 0;
-  let inRest = false;
-  let isPaused = false;
-
-  function updateSetDisplay() {
-    currentSetDisplay.textContent = `Série ${currentSet}/${totalSets}`;
-  }
-
-  function startExercise(index) {
-    currentExercise = index;
-    inRest = false;
-    isPaused = false;
-
-    // si toutes les séries sont terminées
-    if (currentExercise >= exercises.length) {
-      currentSet++;
-      updateSetDisplay();
-
-      if (currentSet > totalSets) {
-        countdownValue.parentElement.style.display = 'none';
-        status.textContent = 'Workout complete!';
-        Message.style.display = 'block';
-        restImage.style.display = 'none';
-        video.style.display = 'block';
-        const finishOverlay = document.getElementById('finishOverlay');
-        finishOverlay.style.display = 'flex';
-        launchConfetti();
-        setTimeout(() => { finishOverlay.style.display = 'none'; }, 7000);
-        return;
-      } else {
-        currentExercise = 0;
-        let pauseBetweenSets = 10;
-        status.textContent = `Prochaine SÉRIE ${currentSet}/${totalSets} dans ${pauseBetweenSets}s`;
-        updateSetDisplay();
-        restImage.style.display = 'block';
-        video.style.display = 'none';
-        countdownValue.parentElement.style.display = 'flex';
-        remaining = pauseBetweenSets;
-        countdownValue.textContent = remaining;
-        clearInterval(timer);
-        timer = setInterval(() => {
-          remaining--;
-          countdownValue.textContent = remaining;
-          if (remaining === 4) {
-            beepSound.currentTime = 0;
-            beepSound.play().catch(() => {});
-          }
-          if (remaining <= 0) {
-            clearInterval(timer);
-            restImage.style.display = 'none';
-            video.style.display = 'block';
-            startExercise(currentExercise);
-          }
-        }, 1000);
-        return;
-      }
+const musicCards = document.querySelectorAll('.music-card');
+musicCards.forEach(card => {
+  card.addEventListener('click', () => {
+    if (currentTrack) {
+      currentTrack.pause();
+      currentTrack.currentTime = 0;
     }
-
-    // lancement exercice
-    videoSource.src = `ex${exercises[currentExercise]}.mp4`;
-    video.load();
-    remaining = exerciseDuration;
-    countdownValue.textContent = remaining;
-    countdownValue.parentElement.style.display = 'flex';
-    status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
-    updateSetDisplay();
-    restImage.style.display = 'none';
-    video.style.display = 'block';
-    video.currentTime = 0;
-    video.play().catch(() => {});
+    musicCards.forEach(c => c.classList.remove('active'));
+    const trackName = card.getAttribute('data-track');
+    if (trackName === 'track1') currentTrack = track1;
+    else if (trackName === 'track2') currentTrack = track2;
+    else currentTrack = null;
+    card.classList.add('active');
     if (currentTrack) currentTrack.play();
-    clearInterval(timer);
-    timer = setInterval(updateCountdown, 1000);
-  }
-
-  function startRest() {
-    inRest = true;
-    isPaused = false;
-    remaining = restDuration;
-    countdownValue.textContent = remaining;
-    status.textContent = `Repos — ${restDuration} s`;
-    updateSetDisplay();
-    video.pause();
-    video.style.display = 'none';
-    restImage.style.display = 'block';
-    clearInterval(timer);
-    timer = setInterval(updateCountdown, 1000);
-  }
-
-  function updateCountdown() {
-    if (isPaused) return;
-    remaining--;
-    countdownValue.textContent = remaining;
-    if (remaining === 5) {
-      beepSound.currentTime = 0;
-      beepSound.play().catch(() => {});
-    }
-    if (remaining <= 0) {
-      clearInterval(timer);
-      if (inRest) startExercise(currentExercise + 1);
-      else startRest();
-    }
-  }
-
-  startBtn.addEventListener ('click', () => {
-    Message.style.display = 'none';
-    currentSet = 1;
-    currentExercise = 0;
-    updateSetDisplay();
-    startExercise(0);
+    musicCards.forEach(c => {
+      if (c !== card && c.getAttribute('data-track')) {
+        c.textContent = ' ' + c.textContent.split(' ')[1] + ' ▶';
+      }
+    });
+    if (currentTrack) card.textContent = ' ' + card.textContent.split(' ')[1] + ' ■';
+    else card.textContent = '🔇 Aucun';
   });
+});
 
-  nextBtn.addEventListener('click', () => {
+const exercises = [1, 2, 3, 4];
+const exerciseNames = ["Knee-Tap", "Side-Knee Reach", "Knee-Hit Cross", "Squat"];
+const exerciseDuration = 70;
+const restDuration = 40;
+const totalSets = 4; // nombre de séries
+
+// --- Fonctions overlay série ---
+function showSeriesOverlay() {
+  seriesOverlay.textContent = `Série ${currentSet}/${totalSets}`;
+  seriesOverlay.style.opacity = '1';
+  seriesOverlay.style.transform = 'scale(1.1)';
+  setTimeout(() => {
+    seriesOverlay.style.transform = 'scale(1)';
+  }, 500);
+  setTimeout(() => {
+    seriesOverlay.style.opacity = '0';
+  }, 2000);
+}
+
+// --- Démarrage exercice ---
+function startExercise(index) {
+  currentExercise = index;
+  inRest = false;
+  isPaused = false;
+
+  if (currentExercise >= exercises.length) {
+    currentSet++;
+    if (currentSet > totalSets) {
+      countdownValue.parentElement.style.display = 'none';
+      status.textContent = 'Workout complete!';
+      Message.style.display = 'block';
+      restImage.style.display = 'none';
+      video.style.display = 'block';
+      const finishOverlay = document.getElementById('finishOverlay');
+      finishOverlay.style.display = 'flex';
+      launchConfetti();
+      setTimeout(() => {
+        finishOverlay.style.display = 'none';
+      }, 7000);
+      return;
+    } else {
+      currentExercise = 0;
+      let pauseBetweenSets = 10;
+      status.textContent = `Prochaine SÉRIE ${currentSet}/${totalSets} dans ${pauseBetweenSets}s`;
+      restImage.style.display = 'block';
+      video.style.display = 'none';
+      countdownValue.parentElement.style.display = 'flex';
+      remaining = pauseBetweenSets;
+      countdownValue.textContent = remaining;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        remaining--;
+        countdownValue.textContent = remaining;
+        if (remaining === 4) {
+          beepSound.currentTime = 0;
+          beepSound.play().catch(() => {});
+        }
+        if (remaining <= 0) {
+          clearInterval(timer);
+          restImage.style.display = 'none';
+          video.style.display = 'block';
+          showSeriesOverlay();
+          startExercise(currentExercise);
+        }
+      }, 1000);
+      return;
+    }
+  }
+
+  // --- Code principal pour lancer l'exercice ---
+  videoSource.src = `ex${exercises[currentExercise]}.mp4`;
+  video.load();
+  remaining = exerciseDuration;
+  countdownValue.textContent = remaining;
+  countdownValue.parentElement.style.display = 'flex';
+  status.textContent = `${exerciseNames[currentExercise]} — ${exerciseDuration}s`;
+  restImage.style.display = 'none';
+  video.style.display = 'block';
+  video.currentTime = 0;
+  video.play().catch(() => {});
+  if (currentTrack) currentTrack.play();
+  showSeriesOverlay();
+  clearInterval(timer);
+  timer = setInterval(updateCountdown, 1000);
+}
+
+// --- Démarrage repos ---
+function startRest() {
+  inRest = true;
+  isPaused = false;
+  remaining = restDuration;
+  countdownValue.textContent = remaining;
+  status.textContent = `Repos — ${restDuration} s`;
+  video.pause();
+  video.style.display = 'none';
+  restImage.style.display = 'block';
+  clearInterval(timer);
+  timer = setInterval(updateCountdown, 1000);
+}
+
+// --- Countdown ---
+function updateCountdown() {
+  if (isPaused) return;
+  remaining--;
+  countdownValue.textContent = remaining;
+  if (remaining === 5) {
+    beepSound.currentTime = 0;
+    beepSound.play().catch(() => {});
+  }
+  if (remaining <= 0) {
     clearInterval(timer);
     if (inRest) startExercise(currentExercise + 1);
     else startRest();
-  });
-
-  pauseBtn.addEventListener('click', () => {
-    isPaused = !isPaused;
-    if (isPaused) {
-      status.textContent += ' (Pause)';
-      video.pause();
-      if (currentTrack) currentTrack.pause();
-    } else {
-      status.textContent = status.textContent.replace(' (Pause)', '');
-      if (!inRest) video.play().catch(() => {});
-      if (currentTrack) currentTrack.play();
-    }
-  });
-
-  function launchConfetti() {
-    const canvas = document.getElementById('confettiCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const confettiCount = 150;
-    const confettis = [];
-    for (let i = 0; i < confettiCount; i++) {
-      confettis.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        r: Math.random() * 6 + 4,
-        d: Math.random() * confettiCount,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-        tilt: Math.random() * 10 - 10,
-        tiltAngleIncremental: Math.random() * 0.07 + 0.05
-      });
-    }
-
-    let angle = 0;
-    function update() {
-      angle += 0.01;
-      confettis.forEach(c => {
-        c.tiltAngleIncremental += 0.01;
-        c.y += (Math.cos(angle + c.d) + 3 + c.r / 2) / 2;
-        c.x += Math.sin(angle);
-        c.tilt = Math.sin(c.tiltAngleIncremental) * 15;
-        if (c.y > canvas.height) {
-          c.y = -10;
-          c.x = Math.random() * canvas.width;
-        }
-      });
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confettis.forEach(c => {
-        ctx.beginPath();
-        ctx.lineWidth = c.r / 2;
-        ctx.strokeStyle = c.color;
-        ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
-        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
-        ctx.stroke();
-      });
-      update();
-    }
-
-    function animate() {
-      draw();
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-    setTimeout(() => { ctx.clearRect(0, 0, canvas.width, canvas.height); }, 7000);
   }
+}
+
+// --- Boutons ---
+startBtn.addEventListener('click', () => {
+  Message.style.display = 'none';
+  currentSet = 1;
+  currentExercise = 0;
+  showSeriesOverlay();
+  startExercise(0);
+});
+
+nextBtn.addEventListener('click', () => {
+  clearInterval(timer);
+  if (inRest) startExercise(currentExercise + 1);
+  else startRest();
+});
+
+pauseBtn.addEventListener('click', () => {
+  isPaused = !isPaused;
+  if (isPaused) {
+    status.textContent += ' (Pause)';
+    video.pause();
+    if (currentTrack) currentTrack.pause();
+  } else {
+    status.textContent = status.textContent.replace(' (Pause)', '');
+    if (!inRest) video.play().catch(() => {});
+    if (currentTrack) currentTrack.play();
+  }
+});
+
+// --- Confettis ---
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const confettiCount = 150;
+  const confettis = [];
+  for (let i = 0; i < confettiCount; i++) {
+    confettis.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * confettiCount,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngleIncremental: Math.random() * 0.07 + 0.05
+    });
+  }
+  let angle = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettis.forEach(c => {
+      ctx.beginPath();
+      ctx.lineWidth = c.r / 2;
+      ctx.strokeStyle = c.color;
+      ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+      ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+      ctx.stroke();
+    });
+    update();
+  }
+
+  function update() {
+    angle += 0.01;
+    confettis.forEach(c => {
+      c.tiltAngleIncremental += 0.01;
+      c.y += (Math.cos(angle + c.d) + 3 + c.r / 2) / 2;
+      c.x += Math.sin(angle);
+      c.tilt = Math.sin(c.tiltAngleIncremental) * 15;
+      if (c.y > canvas.height) {
+        c.y = -10;
+        c.x = Math.random() * canvas.width;
+      }
+    });
+  }
+
+  function animate() {
+    draw();
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  setTimeout(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, 7000);
+}
   </script>
 </body>
 
