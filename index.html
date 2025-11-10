@@ -152,21 +152,22 @@
       to { opacity: 1 }
     }
 
-    #seriesOverlay {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(0,0,0,0.5);
-      color: #5ce1e6;
-      font-weight: 700;
-      font-size: 24px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      pointer-events: none;
-      opacity: 1;
-      transform: scale(1);
-      transition: none;
-    }
+#seriesOverlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;      /* <-- ici, à gauche au lieu de right */
+  background: rgba(0,0,0,0.5);
+  color: #5ce1e6;
+  font-weight: 700;
+  font-size: 24px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 1;
+  transform: scale(1);
+  transition: none;
+}
+
 
     #finishOverlay {
       position: fixed;
