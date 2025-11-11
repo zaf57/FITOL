@@ -259,18 +259,17 @@
   animation: introFadeIn 1s ease forwards;
 ">
   <img id="introLogo" src="logo-fitolblanctransp.png" alt="FIT'OL"
-    style="width:150px;
-    height:150px;
-    border-radius:12px;
-    margin-bottom:1px;
-    transform:scale(0.6);opacity:0;animation: logoPop 1s 0.2s ease forwards;">
+    style="width:90px;height:90px;border-radius:12px;margin-bottom:24px;
+           transform:scale(0.6);opacity:0;animation: logoPop 1s 0.2s ease forwards;">
   
   <h1 style="
     color:#5ce1e6;
     font-size:28px;
     margin-bottom:12px;
     opacity:0;
-    animation: fadeUp 1s 0.4s ease forwards;">Bienvenue sur FIT'OL</h1>
+    animation: fadeUp 1s 0.4s ease forwards;
+  ">
+    Bienvenue sur FIT'OL</h1>
 
 <p style="
     max-width:520px;
@@ -290,28 +289,25 @@
   <strong>Choisis le nombre de séries et commence !</strong>
 </p>
 
-  <div style="
-    margin:20px 0;
-    opacity:0;
-    animation: fadeUp 1s 1s ease forwards;
+<div style="margin:20px 0; opacity:0; animation: fadeUp 1s 1s ease forwards;">
+  <label for="serieCount" style="color:#9aa0a6;">Nombre de séries :</label><br>
+  <select id="serieCount" style="
+    margin-top:10px;
+    padding:10px 18px;
+    font-size:16px;
+    border-radius:10px;
+    border:none;
+    background:#121214;
+    color:white;
+    text-align:center;
+    box-shadow:0 0 10px #000;
   ">
-    <label for="serieCount" style="color:#9aa0a6;">Nombre de séries :</label><br>
-    <select id="serieCount" style="
-      margin-top:10px;
-      padding:10px 18px;
-      font-size:16px;
-      border-radius:10px;
-      border:none;
-      background:#121214;
-      color:white;
-      text-align:center;
-      box-shadow:0 0 10px #000;
-    ">
-      <option value="2">2 séries</option>
-      <option value="4" selected>4 séries</option>
-      <option value="6">6 séries</option>
-    </select>
-  </div>
+    <option value="2">2 séries</option>
+    <option value="4" selected>4 séries</option>
+    <option value="6">6 séries</option>
+  </select>
+</div>
+
 
   <button id="enterBtn" style="
     background:#5ce1e6;
@@ -428,19 +424,36 @@
 
  <script>
 // ----- PAGE D'ACCUEIL -----
-   
+
+// --- Variables globales pour la séance ---
+let totalSets;       // nombre de séries choisi par l'utilisateur
+let currentSet = 1;
+let currentExercise = 0;
+
 const introPage = document.getElementById('introPage');
 const enterBtn = document.getElementById('enterBtn');
 const serieCountSelect = document.getElementById('serieCount');
-
-let totalSets = 4; // valeur par défaut
+const currentSetDisplay = document.getElementById('currentSet');
+const seriesOverlay = document.getElementById('seriesOverlay');
 
 enterBtn.addEventListener('click', () => {
-  totalSets = parseInt(serieCountSelect.value); // récupère le choix actuel
-  localStorage.setItem('fitol_totalSets', totalSets); // optionnel si tu veux garder la valeur
+  // Récupère le choix actuel de l'utilisateur
+  totalSets = parseInt(serieCountSelect.value);
+
+  // Met à jour l'affichage initial
+  currentSet = 1;
+  currentExercise = 0;
+  currentSetDisplay.textContent = `Série ${currentSet}/${totalSets}`;    
+  seriesOverlay.textContent = `Série ${currentSet}/${totalSets}`;
+
+  // Optionnel : sauvegarde le choix
+  localStorage.setItem('fitol_totalSets', totalSets);
+
+  // Masque la page d'accueil
   introPage.style.opacity = '0';
   introPage.style.transition = 'opacity 0.6s ease';
   setTimeout(() => introPage.style.display = 'none', 600);
+
 });
 
 
@@ -494,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"]; 
   const exerciseDuration = 70;
   const restDuration = 40;
-  let totalSets = parseInt(localStorage.getItem('fitol_totalSets')) || 4;
+  //let totalSets = parseInt(localStorage.getItem('fitol_totalSets')) || 4;
  document.getElementById('currentSet').textContent = `Série 1/${totalSets}`; 
 
 
