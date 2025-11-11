@@ -436,12 +436,13 @@ const serieCountSelect = document.getElementById('serieCount');
 let totalSets = 4; // valeur par défaut
 
 enterBtn.addEventListener('click', () => {
-  totalSets = parseInt(serieCountSelect.value);
-  localStorage.setItem('fitol_totalSets', totalSets);
+  totalSets = parseInt(serieCountSelect.value); // récupère le choix actuel
+  localStorage.setItem('fitol_totalSets', totalSets); // optionnel si tu veux garder la valeur
   introPage.style.opacity = '0';
   introPage.style.transition = 'opacity 0.6s ease';
   setTimeout(() => introPage.style.display = 'none', 600);
 });
+
 
 
 // ----- PAGE D'EXERCICE -----
