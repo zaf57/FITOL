@@ -97,9 +97,12 @@
     }
 
     .side {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+     align-items: stretch;
+     align-content: space-around;
+     flex-wrap: wrap;
     }
 
     .btn {
@@ -158,10 +161,10 @@
   position: absolute;
   top: 12px;
   left: 12px;      /* <-- ici, à gauche au lieu de right */
-  background: rgba(0,0,0,0.5);
+  background: #ffffff24;
   color: #5ce1e6;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
   padding: 6px 12px;
   border-radius: 8px;
   pointer-events: none;
@@ -235,7 +238,7 @@
             Ton navigateur ne supporte pas la balise vidéo.
           </video>
           <img id="restImage" alt="repos" src="repos.jpg" style="position:absolute;inset:0;display:none">
-          <div id="seriesOverlay">S. 1</div>
+          <div id="seriesOverlay">Serie 1</div>
         </div>
 
       
@@ -247,11 +250,11 @@
 </div>
 
 
-        <div class="bravo" id="bravoMessage">🎉 Bravo ! Séance terminée </div>
+        <div class="bravo" id="bravoMessage">🎉 Bravo ! </div>
 
         <div id="finishOverlay">
           <div class="finish-content">
-            <h1>🎉TERMINÉ🎉</h1>
+            <h1>TERMINÉ!</h1>
             <p>Excellent travail tu as fini toutes les séries!💪</p>
           </div>
           <canvas id="confettiCanvas"></canvas>
@@ -276,7 +279,7 @@
           <div id="musicCards" class="music-row" style="margin-top:8px">
             <div class="music-card btn" data-track="track1" data-name="Halay"> Halay ▶</div> 
             <div class="music-card btn" data-track="track2" data-name="Mix"> Mix ▶</div>
-            <div class="music-card btn" data-track="" data-name="Aucun"> STOP 🔈</div>
+            <div class="music-card btn" data-track="" data-name="Aucun"> STOP </div>
           </div>
         </div>
 
@@ -364,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalSets = 4;
 
   function updateSeriesDisplay(){
-    seriesOverlay.textContent = `S. ${currentSet}`;
+    seriesOverlay.textContent = `Serie ${currentSet}`;
     currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
   }
 
@@ -383,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentSet++;
       if(currentSet>totalSets){
         countdownValue.parentElement.style.display='none';
-        status.textContent='Séance terminée ! 🎉';
+        status.textContent='Séance terminée !';
         bravoMessage.style.display='block';
         restImage.style.display='none';
         video.style.display='block';
