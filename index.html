@@ -218,12 +218,117 @@
   background: var(--accent);
   transition: width 1s linear;
 }
+    
+    #introPage {
+  transition: opacity 0.6s ease;
+}
+    
+    @keyframes introFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes logoPop {
+  from { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
 
   </style>
 </head>
 
 <body>
+  
+<!-- PAGE D'ACCUEIL -->
+<div id="introPage" style="
+  position:fixed; inset:0;
+  background:#0b0b0c;
+  color:white;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center;
+  padding:24px;
+  z-index:99999;
+  opacity:0;
+  animation: introFadeIn 1s ease forwards;
+">
+  <img id="introLogo" src="logo-fitolblanctransp.png" alt="FIT'OL"
+    style="width:90px;height:90px;border-radius:12px;margin-bottom:24px;
+           transform:scale(0.6);opacity:0;animation: logoPop 1s 0.2s ease forwards;">
+  
+  <h1 style="
+    color:#5ce1e6;
+    font-size:28px;
+    margin-bottom:12px;
+    opacity:0;
+    animation: fadeUp 1s 0.4s ease forwards;
+  ">
+    Bienvenue sur FIT'OL 🏋️‍♀️
+  </h1>
 
+  <p style="
+    max-width:520px;
+    color:#9aa0a6;
+    margin:20px 0;
+    line-height:1.5;
+    opacity:0;
+    animation: fadeUp 1s 0.7s ease forwards;
+  ">
+    Prépare-toi pour une séance complète de fitness personnalisée.<br>
+    Chaque exercice dure <strong>70 secondes</strong> suivies de <strong>40 secondes de repos</strong>.<br>
+    Choisis le nombre de séries ci-dessous 👇
+  </p>
+
+  <div style="
+    margin:20px 0;
+    opacity:0;
+    animation: fadeUp 1s 1s ease forwards;
+  ">
+    <label for="serieCount" style="color:#9aa0a6;">Nombre de séries :</label><br>
+    <select id="serieCount" style="
+      margin-top:10px;
+      padding:10px 18px;
+      font-size:16px;
+      border-radius:10px;
+      border:none;
+      background:#121214;
+      color:white;
+      text-align:center;
+      box-shadow:0 0 10px #000;
+    ">
+      <option value="2">2 séries</option>
+      <option value="4" selected>4 séries</option>
+      <option value="6">6 séries</option>
+    </select>
+  </div>
+
+  <button id="enterBtn" style="
+    background:#5ce1e6;
+    color:white;
+    border:none;
+    padding:14px 28px;
+    font-size:18px;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:0 0 12px #5ce1e6;
+    opacity:0;
+    transform:translateY(10px);
+    animation: fadeUp 1s 1.3s ease forwards;
+  ">
+    🚀 Commencer la séance
+  </button>
+</div>
+
+
+
+  
+<!-- PAGE D'EXERCICE -->
   <div class="container" style="margin-top: 2px;">
     <header>
       <img src="logo-fitolblanctransp.png" alt="FIT'OL" style="width:48px;height:48px;border-radius:8px;background:#4b4b4b">
@@ -317,6 +422,25 @@
   </div>
 
  <script>
+// ----- PAGE D'ACCUEIL -----
+   
+const introPage = document.getElementById('introPage');
+const enterBtn = document.getElementById('enterBtn');
+const serieCountSelect = document.getElementById('serieCount');
+
+let totalSets = 4; // valeur par défaut
+
+enterBtn.addEventListener('click', () => {
+  totalSets = parseInt(serieCountSelect.value);
+  localStorage.setItem('fitol_totalSets', totalSets);
+  introPage.style.opacity = '0';
+  introPage.style.transition = 'opacity 0.6s ease';
+  setTimeout(() => introPage.style.display = 'none', 600);
+});
+
+
+// ----- PAGE D'EXERCICE -----
+   
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('exerciseVideo');
   const videoSource = document.getElementById('videoSource');
@@ -361,14 +485,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const exercises = [1,2,3,4];
-  const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"];
+  const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"]; 
   const exerciseDuration = 70;
   const restDuration = 40;
-  const totalSets = 4;
+  let totalSets = parseInt(localStorage.getItem('fitol_totalSets')) || 4; 
 
   function updateSeriesDisplay(){
     seriesOverlay.textContent = `Serie ${currentSet}`;
-    currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;
+    currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`; 
   }
 
   function showFinishOverlay(){
