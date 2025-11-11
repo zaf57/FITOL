@@ -238,6 +238,15 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+    #preStartImage {
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+#preStartImage.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 
   </style>
@@ -259,7 +268,7 @@
   animation: introFadeIn 1s ease forwards;
 ">
   <img id="introLogo" src="logo-fitolblanctransp.png" alt="FIT'OL"
-    style="width:90px;height:90px;border-radius:12px;margin-bottom:24px;
+    style="width:150px;height:150px;border-radius:12px;margin-bottom:1px;
            transform:scale(0.6);opacity:0;animation: logoPop 1s 0.2s ease forwards;">
   
   <h1 style="
@@ -338,6 +347,9 @@
 
     <section class="player-area">
       <div class="card video-wrap">
+        <img id="preStartImage" src="intro.jpg" alt="Prépare-toi !" 
+     style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;">
+
         <div style="position:relative;height:0;padding-bottom:125%">
           <video id="exerciseVideo" playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%">
             <source id="videoSource" src="ex1.mp4" type="video/mp4">
@@ -600,9 +612,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if(remaining<=0){ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); }
   }
 
+const preStartImage = document.getElementById('preStartImage');
+preStartImage.style.display = 'block'; // facultatif si tu veux forcer l'affichage 
+
   // Boutons
-  startBtn.addEventListener('click', ()=>{ bravoMessage.style.display='none'; currentSet=1; currentExercise=0; updateSeriesDisplay(); startExercise(0); });
-  nextBtn.addEventListener('click', ()=>{ clearInterval(timer); if(inRest) startExercise(currentExercise+1); else startRest(); });
+startBtn.addEventListener('click', () => {
+    // Masquer l'image
+    preStartImage.classList.add('hidden');
+
+    // Démarrer la première série
+    bravoMessage.style.display = 'none';
+    currentSet = 1;
+    currentExercise = 0;
+    updateSeriesDisplay();
+    startExercise(0);
+});
+
+  
+  nextBtn.addEventListener('click', ()=>{
+    clearInterval(timer); 
+    if(inRest) startExercise(currentExercise+1); 
+    else startRest(); });
+  
   pauseBtn.addEventListener('click', ()=>{
     isPaused = !isPaused;
     if(isPaused){
