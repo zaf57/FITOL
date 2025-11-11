@@ -367,9 +367,9 @@
       </div>
 
       <aside class="side card">
-        <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;"> 
+        <div id="statusWrapper" style="display:flex;justify-content:space-between;align-items:center;">  
           <div id="status">Prêt? — Démarre la séance.</div>
-          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/4</div>
+          <div id="currentSet" style="font-weight:700; color:#5ce1e6;">Série 1/?</div>
         </div>
 
         <div class="control-row">
@@ -488,11 +488,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const exerciseNames = ["Knee-Tap","Side-Knee Reach","Knee-Hit Cross","Squat"]; 
   const exerciseDuration = 70;
   const restDuration = 40;
-  let totalSets = parseInt(localStorage.getItem('fitol_totalSets')) || 4; 
+  let totalSets = parseInt(localStorage.getItem('fitol_totalSets')) || 4;
+ document.getElementById('currentSet').textContent = `Série 1/${totalSets}`; 
+
+
 
   function updateSeriesDisplay(){
     seriesOverlay.textContent = `Serie ${currentSet}`;
-    currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`; 
+    currentSetDisplay.textContent = `S. ${currentSet}/${totalSets}`;  
   }
 
   function showFinishOverlay(){
